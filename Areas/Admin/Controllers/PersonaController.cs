@@ -44,71 +44,77 @@ namespace DLACCESS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersonaVM vm)
         {
-            Console.WriteLine(">>> Entrando a Create Persona");
-
-            vm.Persona ??= new Persona();
-
-            // ❌ quitar validaciones que no aplican
-            ModelState.Remove("ArchivoImagen");
-            ModelState.Remove("Persona.Img");
-
-            // ✅ VALIDACIÓN REAL
+            // 🔴 Validación SOLO de imagen
             if (string.IsNullOrEmpty(vm.FotoBase64) && vm.ArchivoImagen == null)
             {
                 ModelState.AddModelError("ArchivoImagen", "Debe subir un archivo o tomar una foto.");
             }
 
+            ModelState.Remove("ArchivoImagen");
+            ModelState.Remove("Persona.Img");
+
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Por favor corrija los errores del formulario.";
-
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
                 vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
-
                 return View(vm);
             }
 
+            // ======================================================
+            // 1️⃣ GUARDAR PERSONA SIN IMAGEN (para obtener el ID)
+            // ======================================================
             vm.Persona.CreatedAt = DateTime.Now;
             vm.Persona.UpdatedAt = DateTime.Now;
             vm.Persona.Estado = true;
-
-            var carpetaFotos = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fotos");
-            Directory.CreateDirectory(carpetaFotos);
-
-            string nombreArchivo;
-
-            // 📸 cámara
-            if (!string.IsNullOrEmpty(vm.FotoBase64))
-            {
-                nombreArchivo = Guid.NewGuid() + ".jpg";
-                var ruta = Path.Combine(carpetaFotos, nombreArchivo);
-
-                var base64Data = vm.FotoBase64.Split(',')[1];
-                var bytes = Convert.FromBase64String(base64Data);
-                await System.IO.File.WriteAllBytesAsync(ruta, bytes);
-
-                vm.Persona.Img = "/fotos/" + nombreArchivo;
-            }
-            // 🖼️ archivo
-            else
-            {
-                nombreArchivo = Guid.NewGuid() + Path.GetExtension(vm.ArchivoImagen.FileName);
-                var ruta = Path.Combine(carpetaFotos, nombreArchivo);
-
-                using var stream = new FileStream(ruta, FileMode.Create);
-                await vm.ArchivoImagen.CopyToAsync(stream);
-
-                vm.Persona.Img = "/fotos/" + nombreArchivo;
-            }
+            vm.Persona.Img = "";
 
             _contenedorTrabajo.Persona.Add(vm.Persona);
+            _contenedorTrabajo.Save();
+
+            int personaId = vm.Persona.Id;
+            string apellidos = vm.Persona.Apellido?.Trim().Replace(" ", "_");
+            string fechaCreacion = vm.Persona.CreatedAt.ToString("yyyyMMdd_HHmmss");
+
+            // ======================================================
+            // 2️⃣ CONFIGURAR RUTA Y NOMBRE FIJO
+            // ======================================================
+            var carpetaFotos = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fotos");
+            if (!Directory.Exists(carpetaFotos))
+                Directory.CreateDirectory(carpetaFotos);
+
+            string nombreArchivo = $"{apellidos}_{fechaCreacion}_{personaId}.jpg";
+            string rutaCompleta = Path.Combine(carpetaFotos, nombreArchivo);
+
+            // ======================================================
+            // 3️⃣ FOTO DESDE CÁMARA
+            // ======================================================
+            if (!string.IsNullOrEmpty(vm.FotoBase64))
+            {
+                var base64Data = vm.FotoBase64.Split(',')[1];
+                byte[] bytes = Convert.FromBase64String(base64Data);
+
+                await System.IO.File.WriteAllBytesAsync(rutaCompleta, bytes);
+            }
+            // ======================================================
+            // 4️⃣ FOTO DESDE ARCHIVO PC
+            // ======================================================
+            else if (vm.ArchivoImagen != null)
+            {
+                using var stream = new FileStream(rutaCompleta, FileMode.Create);
+                await vm.ArchivoImagen.CopyToAsync(stream);
+            }
+
+            // ======================================================
+            // 5️⃣ ACTUALIZAR PERSONA CON RUTA DE IMAGEN
+            // ======================================================
+            vm.Persona.Img = "/fotos/" + nombreArchivo;
+            _contenedorTrabajo.Persona.Update(vm.Persona);
             _contenedorTrabajo.Save();
 
             TempData["Success"] = "Persona creada correctamente.";
             return RedirectToAction(nameof(Index));
         }
-
 
 
 
