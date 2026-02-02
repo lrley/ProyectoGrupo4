@@ -1,0 +1,349 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model PersonaVM
+
+@{
+    ViewData["Title"] = "Editar Persona";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Editar Persona</h4>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div id="errorMsg" class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
+            <form method="post" asp-action="Edit" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Persona.Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Nombre" class="form-label"></label>
+                        <input asp-for="Persona.Nombre" class="form-control" placeholder="Ingrese el nombre" />
+                        <span asp-validation-for="Persona.Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Apellido" class="form-label"></label>
+                        <input asp-for="Persona.Apellido" class="form-control" placeholder="Ingrese el apellido" />
+                        <span asp-validation-for="Persona.Apellido" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Cedula" class="form-label"></label>
+                        <input asp-for="Persona.Cedula" class="form-control" placeholder="Ingrese la cédula" />
+                        <span asp-validation-for="Persona.Cedula" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Telefono" class="form-label"></label>
+                        <input asp-for="Persona.Telefono" class="form-control" placeholder="Ingrese el teléfono" />
+                        <span asp-validation-for="Persona.Telefono" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Email" class="form-label"></label>
+                        <input asp-for="Persona.Email" class="form-control" placeholder="Ingrese el email" />
+                        <span asp-validation-for="Persona.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Persona.Clave" class="form-label"></label>
+                         <input name="Persona.Clave" type="password" class="form-control" placeholder="Dejar vacío para no cambiar clave" />
+                        <span asp-validation-for="Persona.Clave" class="text-danger"></span>
+                    </div>
+                    
+                <!--   <div class="col-md-6">
+                        <label asp-for="Persona.Clave" class="form-label"></label>
+                        <input asp-for="Persona.Clave" type="password" class="form-control" placeholder="Ingrese la clave" />
+                        <span asp-validation-for="Persona.Clave" class="text-danger"></span>
+                    </div>
+                 -->
+                    <div class="col-md-4">
+                        <label asp-for="Persona.IdRol" class="form-label">Rol</label>
+                        @Html.DropDownListFor(m => m.Persona.IdRol, Model.ListaRoles, "-Seleccione el rol-", new { @class = "form-select" })
+                        <span asp-validation-for="Persona.IdRol" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Persona.IdSexo" class="form-label">Género</label>
+                        @Html.DropDownListFor(m => m.Persona.IdSexo, Model.ListaSexo, "-Seleccione el género-", new { @class = "form-select" })
+                        <span asp-validation-for="Persona.IdSexo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Persona.IdTipoPersona" class="form-label">Tipo de Persona</label>
+                        @Html.DropDownListFor(m => m.Persona.IdTipoPersona, Model.ListaTipoPersona, "-Seleccione el tipo-", new { @class = "form-select" })
+                        <span asp-validation-for="Persona.IdTipoPersona" class="text-danger"></span>
+                    </div>
+
+
+
+                    <!--************************************************************************FOTO**************************************************************************-->
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Seleccione método de imagen</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionArchivo" value="archivo" checked onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionArchivo">Subir desde archivo</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionCamara" value="camara" onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionCamara">Tomar con cámara</label>
+                        </div>
+                    </div>
+
+                    <!-- Subir archivo (correcto) -->
+                    <div id="divArchivo" class="mb-3">
+                        <label class="form-label">Imagen</label>
+                        <input asp-for="ArchivoImagen" type="file" class="form-control" onchange="previewArchivo(this)" />
+                        <span asp-validation-for="ArchivoImagen" class="text-danger"></span>
+                    </div>
+
+
+
+
+
+                    <!-- Tomar foto -->
+                    <div id="divCamara" class="mb-3" style="display:none;">
+                        <label>Tomar Foto</label>
+                        <video id="video" width="320" height="240" autoplay class="border mb-2" style="display:none;"></video>
+                        <button type="button" class="btn btn-primary" onclick="iniciarCamara()">
+                            <i class="bi bi-camera-video"></i> Abrir Cámara
+                        </button>
+                        <button type="button" class="btn btn-success mt-2" onclick="tomarFoto()">
+                            <i class="bi bi-camera-fill"></i> Tomar Foto
+                        </button>
+                        <canvas id="canvas" style="display:none;"></canvas>
+                        <input type="hidden" asp-for="FotoBase64" />
+                    </div>
+
+                    <!-- Vista previa única -->
+                    <img id="previewImagen" src="" class="img-thumbnail mt-2" style="display:none; max-width:200px;" />
+
+
+                    <!--************************************************************************FIN DE FOTO**************************************************************************-->
+
+                    <div class="row g-3">
+                        <!-- Fecha de Nacimiento -->
+                        <div class="col-md-4">
+                            <label asp-for="Persona.Nacimiento" class="form-label">Nacimiento</label>
+                            <input asp-for="Persona.Nacimiento" type="date" class="form-control form-control-sm" />
+                        </div>
+
+                        <!-- Fecha de Inicio -->
+                        <div class="col-md-4">
+                            <label asp-for="Persona.FechaInicio" class="form-label">Inicio</label>
+                            <input asp-for="Persona.FechaInicio" type="date" class="form-control form-control-sm" />
+                        </div>
+
+                        <!-- Fecha de Caducidad -->
+                        <div class="col-md-4">
+                            <label asp-for="Persona.FechaFin" class="form-label">Caducidad</label>
+                            <input asp-for="Persona.FechaFin" type="date" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-12">
+                        <label asp-for="Persona.Direccion" class="form-label"></label>
+                        <input asp-for="Persona.Direccion" class="form-control" placeholder="Ingrese la dirección" />
+                        <span asp-validation-for="Persona.Direccion" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group row mt-4 mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="Persona.Estado" class="form-label me-2"></label>
+                            <select asp-for="Persona.Estado" class="form-select form-select-sm d-inline w-auto">
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                            <span asp-validation-for="Persona.Estado" class="text-danger"></span>
+                            <!-- Badge dinámico -->
+                            @if (Model.Persona.Estado)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    <i class="bi bi-hand-thumbs-up-fill"></i> Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">
+                                    <i class="bi bi-eye-slash-fill"></i> Inactivo
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label asp-for="Persona.Permiso" class="form-label me-2"></label>
+                            <select asp-for="Persona.Permiso" class="form-select form-select-sm d-inline w-auto">
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                            <span asp-validation-for="Persona.Permiso" class="text-danger"></span>
+                            <!-- Badge dinámico -->
+                            @if (Model.Persona.Permiso)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    <i class="bi bi-hand-thumbs-up-fill"></i> Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">
+                                    <i class="bi bi-eye-slash-fill"></i> Inactivo
+                                </span>
+                            }
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Persona.Google" class="form-label me-2"></label>
+                          
+                            <span asp-validation-for="Persona.Google" class="text-danger"></span>
+                            <!-- Badge dinámico -->
+                            @if (Model.Persona.Google)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    <i class="bi bi-hand-thumbs-up-fill"></i> Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">
+                                    <i class="bi bi-eye-slash-fill"></i> Inactivo
+                                </span>
+                            }
+                        </div>
+
+                
+                    </div>
+
+
+
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-save"></i> Editar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+                 $(document).ready(function () {
+             $("#errorMsg").fadeIn();
+         });
+
+
+
+         const video = document.getElementById('video');
+         const canvas = document.getElementById('canvas');
+         const fotoBase64 = document.querySelector('input[name="FotoBase64"]');
+         const previewImagen = document.getElementById('previewImagen');
+         let streamActivo = null;
+
+         function toggleImagen() {
+             const opcion = document.querySelector('input[name="opcionImagen"]:checked').value;
+
+             // Reset preview y valores
+             previewImagen.src = "";
+             previewImagen.style.display = "none";
+             fotoBase64.value = "";
+             document.querySelector('input[type="file"]').value = "";
+
+             if (opcion === 'archivo') {
+                 document.getElementById('divArchivo').style.display = 'block';
+                 document.getElementById('divCamara').style.display = 'none';
+                 detenerCamara();
+             } else {
+                 document.getElementById('divArchivo').style.display = 'none';
+                 document.getElementById('divCamara').style.display = 'block';
+             }
+         }
+
+         function iniciarCamara() {
+             previewImagen.src = "";
+             previewImagen.style.display = "none";
+             fotoBase64.value = "";
+
+             navigator.mediaDevices.getUserMedia({ video: true })
+                 .then(stream => {
+                     streamActivo = stream;
+                     video.srcObject = stream;
+                     video.style.display = "block";
+                 })
+                 .catch(err => {
+                     alert("No se pudo acceder a la cámara: " + err);
+                 });
+         }
+
+         function tomarFoto() {
+             if (!streamActivo) {
+                 alert("Primero abre la cámara.");
+                 return;
+             }
+             canvas.width = video.videoWidth;
+             canvas.height = video.videoHeight;
+             canvas.getContext('2d').drawImage(video, 0, 0);
+             const dataUrl = canvas.toDataURL('image/jpeg');
+             fotoBase64.value = dataUrl;
+
+             previewImagen.src = dataUrl;
+             previewImagen.style.display = "block";
+
+             detenerCamara();
+         }
+
+         // ✅ Aquí va tu función previewArchivo
+         function previewArchivo(input) {
+             const file = input.files[0];
+             if (file) {
+                 const reader = new FileReader();
+                 reader.onload = function(e) {
+                     previewImagen.src = e.target.result;
+                     previewImagen.style.display = "block";
+                     fotoBase64.value = ""; // limpiar si había foto tomada
+                 };
+                 reader.readAsDataURL(file);
+             } else {
+                 previewImagen.src = "";
+                 previewImagen.style.display = "none";
+             }
+         }
+
+         function detenerCamara() {
+             if (streamActivo) {
+                 streamActivo.getTracks().forEach(track => track.stop());
+                 streamActivo = null;
+             }
+             video.srcObject = null;
+             video.style.display = "none";
+         }
+    </script>
+}

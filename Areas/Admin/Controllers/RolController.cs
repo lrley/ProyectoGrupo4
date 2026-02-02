@@ -92,29 +92,8 @@ namespace DLACCESS.Areas.Admin.Controllers
             return View(rol);
             
         }
-
-
-        /*        [HttpPost]
-                [ValidateAntiForgeryToken]
-                public IActionResult Edit(Rol rol)
-                {
-                    if (ModelState.IsValid)
-                    {
-
-                        // Convertir a mayúsculas antes de validar/guardar
-                        rol.NombreRol = rol.NombreRol.ToUpper();
-                        _contenedorTrabajo.Rol.Update(rol);
-                        _contenedorTrabajo.Save();
-                        TempData["Success"] = "Rol actualizado correctamente.";
-                        return RedirectToAction(nameof(Index));
-
-                    }
-
-
-                    return View(rol);
-                }
-        */
-
+        
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Rol rol)
@@ -190,6 +169,18 @@ namespace DLACCESS.Areas.Admin.Controllers
             if (objFromDb == null){
                 return Json(new { success = false, message="Error Borrando Rol" });
             }
+
+            // 🔍 Validar si hay personas asociadas a este Rol
+            var personasConRol = _contenedorTrabajo.Persona.GetAll()
+                .Any(p => p.IdRol == id);
+
+            if (personasConRol)
+            {
+                return Json(new { success = false, message = "No se puede eliminar el Rol porque está asignado a una persona." });
+            }
+
+
+
 
             _contenedorTrabajo.Rol.Remove(objFromDb);
             _contenedorTrabajo.Save();

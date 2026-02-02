@@ -168,6 +168,15 @@ namespace DLACCESS.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error Borrando Tipo Persona" });
             }
 
+            var personasConTipo = _contenedorTrabajo.Persona.GetAll()
+            .Any(p => p.IdTipoPersona == id);
+
+            if (personasConTipo)
+            {
+                return Json(new { success = false, message = "No se puede eliminar el Tipo de Persona porque está asignado a una persona." });
+            }
+
+
             _contenedorTrabajo.TiposPersona.Remove(objFromDb);
             _contenedorTrabajo.Save();
             return Json(new { success = true, message = "Tipo Persona Borrado Correctamente" });
