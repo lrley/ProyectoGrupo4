@@ -44,6 +44,32 @@ namespace DLACCESS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersonaVM vm)
         {
+
+            // ================= NORMALIZAR DATOS =================
+            vm.Persona.Cedula = vm.Persona.Cedula?.Trim();
+            vm.Persona.Email = vm.Persona.Email?.Trim().ToLower(); // 👈 email siempre minúscula
+
+            vm.Persona.Nombre = vm.Persona.Nombre?.Trim().ToUpper();
+            vm.Persona.Apellido = vm.Persona.Apellido?.Trim().ToUpper();
+            vm.Persona.Direccion = vm.Persona.Direccion?.Trim().ToUpper();
+
+            // ================= VALIDACIONES DE DUPLICADOS =================
+            bool existeCedula = _contenedorTrabajo.Persona
+                .GetFirstOrDefault(p => p.Cedula == vm.Persona.Cedula) != null;
+
+            if (existeCedula)
+            {
+                ModelState.AddModelError("Persona.Cedula", "La cédula ya está registrada.");
+            }
+
+            bool existeEmail = _contenedorTrabajo.Persona
+                .GetFirstOrDefault(p => p.Email == vm.Persona.Email) != null;
+
+            if (existeEmail)
+            {
+                ModelState.AddModelError("Persona.Email", "El email ya está registrado.");
+            }
+
             // 🔴 Validación SOLO de imagen
             if (string.IsNullOrEmpty(vm.FotoBase64) && vm.ArchivoImagen == null)
             {
