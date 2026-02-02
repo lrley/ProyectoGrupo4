@@ -42,32 +42,26 @@ namespace DLACCESS.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PersonaVM vm, string fotoBase64)
+        public async Task<IActionResult> Create(PersonaVM vm)
         {
             Console.WriteLine(">>> Entrando a Create Persona");
-            Console.WriteLine($"ArchivoImagen: {(vm.ArchivoImagen != null ? vm.ArchivoImagen.FileName : "VACÍO")}");
-            Console.WriteLine($"FotoBase64: {(string.IsNullOrEmpty(fotoBase64) ? "VACÍO" : "CONTIENE DATOS")}");
 
-            // Validación: debe venir archivo o foto
-            if (string.IsNullOrEmpty(fotoBase64) && vm.ArchivoImagen == null)
+            vm.Persona ??= new Persona();
+
+            // ❌ quitar validaciones que no aplican
+            ModelState.Remove("ArchivoImagen");
+            ModelState.Remove("Persona.Img");
+
+            // ✅ VALIDACIÓN REAL
+            if (string.IsNullOrEmpty(vm.FotoBase64) && vm.ArchivoImagen == null)
             {
-                ModelState.AddModelError(nameof(vm.ArchivoImagen), "Debe subir un archivo o tomar una foto.");
+                ModelState.AddModelError("ArchivoImagen", "Debe subir un archivo o tomar una foto.");
             }
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine(">>> ModelState inválido");
-                foreach (var kvp in ModelState)
-                {
-                    foreach (var error in kvp.Value.Errors)
-                    {
-                        Console.WriteLine($"Campo: {kvp.Key} - Error: {error.ErrorMessage}");
-                    }
-                }
-
                 TempData["Error"] = "Por favor corrija los errores del formulario.";
 
-                // 🔁 Recargar listas porque llegan null en el POST
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
                 vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
@@ -75,61 +69,49 @@ namespace DLACCESS.Areas.Admin.Controllers
                 return View(vm);
             }
 
-            // Datos base de la Persona
             vm.Persona.CreatedAt = DateTime.Now;
             vm.Persona.UpdatedAt = DateTime.Now;
             vm.Persona.Estado = true;
 
-            // Carpeta de fotos
             var carpetaFotos = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "fotos");
-            if (!Directory.Exists(carpetaFotos))
-                Directory.CreateDirectory(carpetaFotos);
+            Directory.CreateDirectory(carpetaFotos);
 
-            string nombreArchivo = "";
+            string nombreArchivo;
 
-            // 📸 Foto desde cámara
-            if (!string.IsNullOrEmpty(fotoBase64))
+            // 📸 cámara
+            if (!string.IsNullOrEmpty(vm.FotoBase64))
             {
-                nombreArchivo = Guid.NewGuid().ToString() + ".jpg";
+                nombreArchivo = Guid.NewGuid() + ".jpg";
                 var ruta = Path.Combine(carpetaFotos, nombreArchivo);
-                Console.WriteLine($">>> Guardando foto cámara en: {ruta}");
 
-                var base64Data = fotoBase64.Split(',')[1];
+                var base64Data = vm.FotoBase64.Split(',')[1];
                 var bytes = Convert.FromBase64String(base64Data);
                 await System.IO.File.WriteAllBytesAsync(ruta, bytes);
 
-                Console.WriteLine(">>> Foto cámara guardada en disco");
                 vm.Persona.Img = "/fotos/" + nombreArchivo;
             }
-            // 🖼️ Archivo subido desde PC
-            else if (vm.ArchivoImagen != null)
-            {
-                nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(vm.ArchivoImagen.FileName);
-                var ruta = Path.Combine(carpetaFotos, nombreArchivo);
-                Console.WriteLine($">>> Guardando archivo PC en: {ruta}");
-
-                using (var stream = new FileStream(ruta, FileMode.Create))
-                {
-                    await vm.ArchivoImagen.CopyToAsync(stream);
-                }
-
-                Console.WriteLine(">>> Archivo PC guardado en disco");
-                vm.Persona.Img = "/fotos/" + nombreArchivo;
-            }
+            // 🖼️ archivo
             else
             {
-                vm.Persona.Img = "";
+                nombreArchivo = Guid.NewGuid() + Path.GetExtension(vm.ArchivoImagen.FileName);
+                var ruta = Path.Combine(carpetaFotos, nombreArchivo);
+
+                using var stream = new FileStream(ruta, FileMode.Create);
+                await vm.ArchivoImagen.CopyToAsync(stream);
+
+                vm.Persona.Img = "/fotos/" + nombreArchivo;
             }
 
-            // Guardar Persona en BD
             _contenedorTrabajo.Persona.Add(vm.Persona);
             _contenedorTrabajo.Save();
-
-            Console.WriteLine($">>> Persona guardada con ID: {vm.Persona.Id}, Img: {vm.Persona.Img}");
 
             TempData["Success"] = "Persona creada correctamente.";
             return RedirectToAction(nameof(Index));
         }
+
+
+
+
 
 
         #region LLamadas a la API

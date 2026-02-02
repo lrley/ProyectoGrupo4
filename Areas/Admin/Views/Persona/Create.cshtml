@@ -20,6 +20,12 @@
             {
                 <div class="alert alert-success">@TempData["Success"]</div>
             }
+            @if (TempData["Error"] != null)
+            {
+                <div id="errorMsg" class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
 
             <form method="post" asp-action="Create" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -116,7 +122,7 @@
                             <i class="bi bi-camera-fill"></i> Tomar Foto
                         </button>
                         <canvas id="canvas" style="display:none;"></canvas>
-                        <input type="hidden" id="fotoBase64" name="fotoBase64" />
+                        <input type="hidden" asp-for="FotoBase64" />
                     </div>
 
                     <!-- Vista previa única -->
@@ -171,9 +177,16 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+                $(document).ready(function () {
+            $("#errorMsg").fadeIn();
+        });
+
+
+
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const fotoBase64 = document.getElementById('fotoBase64');
+       // const fotoBase64 = document.getElementById('fotoBase64');
+        const fotoBase64 = document.querySelector('input[name="FotoBase64"]');
         const previewImagen = document.getElementById('previewImagen');
         let streamActivo = null;
 
