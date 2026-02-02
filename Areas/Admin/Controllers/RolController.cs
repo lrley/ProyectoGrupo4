@@ -32,22 +32,6 @@ namespace DLACCESS.Areas.Admin.Controllers
         }
 
 
-        /*   [HttpPost]
-            [ValidateAntiForgeryToken]
-            public IActionResult Create(Rol rol)
-            {
-                if (ModelState.IsValid)
-                {
-                    //Logica para agregar el rol
-                    _contenedorTrabajo.Rol.Add(rol);
-                    _contenedorTrabajo.Save();
-                    return RedirectToAction(nameof(Index));
-                }
-
-
-                return View();
-            }*/
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Rol rol)
