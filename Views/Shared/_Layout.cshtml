@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DLACCESS</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DLACCESS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+
+    <!--Css todos-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+
+</head>
+<body>
+
+    <header>
+
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-journal-text me-2"></i> DLACCESS
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                      <!--  <li class="nav-item">
+                            <a class="nav-link text-white fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                          </li>
+                       -->
+
+
+               
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
+                                Informacion de Usuarios
+                            </a>
+                            <div class="dropdown-menu shadow-sm">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Persona" asp-action="Index">
+                                    <i class="bi bi-person-badge me-2"></i> Creacion de Personas
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
+                                    <i class="bi bi-info-circle me-2"></i> Informacion Adicional
+                                </a>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
+                                Informacion de Vehiculo
+                            </a>
+                            <div class="dropdown-menu shadow-sm">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Marcas" asp-action="Index">
+                                    <i class="bi bi-person-badge me-2"></i> Crear Marca De Vehiculo
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Modelos" asp-action="Index">
+                                    <i class="bi bi-diagram-3 me-2"></i> Crear Modelo de Vehiculo
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="TiposVehiculo" asp-action="Index">
+                                    <i class="bi bi-car-front me-2"></i> Tipos de Vehículo
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Vechiulos" asp-action="Index">
+                                    <i class="bi bi-building me-2"></i> Crear Vechiulo
+                                </a>
+                           
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
+                                Informacion de Vivienda
+                            </a>
+                            <div class="dropdown-menu shadow-sm">
+                                <!-- Crear Manzanas y Villas -->
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Manzanas" asp-action="Create">
+                                    <i class="bi bi-diagram-3 me-2"></i> Crear Manzana
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Villas" asp-action="Create">
+                                    <i class="bi bi-house-door me-2"></i> Crear Villa
+                                </a>
+
+                                <!-- Crear Etapa -->
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Etapas" asp-action="Create">
+                                    <i class="bi bi-diagram-2 me-2"></i> Crear Etapa
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <!-- Crear Departamento, Piso y Edificio -->
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="DepartamentosEdificio" asp-action="Create">
+                                    <i class="bi bi-door-open me-2"></i> Crear Departamento
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="PisosEdificio" asp-action="Create">
+                                    <i class="bi bi-layers me-2"></i> Crear Piso
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Edificios" asp-action="Create">
+                                    <i class="bi bi-building me-2"></i> Crear Edificio
+                                </a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
+                                Configuracion
+                            </a>
+                            <div class="dropdown-menu shadow-sm">
+                                <!-- Sección existente -->
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Rol" asp-action="Index">
+                                    <i class="bi bi-tags me-2"></i> Roles
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Sexo" asp-action="Index">
+                                    <i class="bi bi-tags me-2"></i> Sexo
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="TipoPersona" asp-action="Index">
+                                    <i class="bi bi-tags me-2"></i> Tipo de Persona
+                                </a>
+
+                               <a class="dropdown-item" asp-area="Admin" asp-controller="Persona" asp-action="Index">
+                                    <i class="bi bi-person-badge me-2"></i> Personas
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+
+                                <!-- Nuevas entidades del sistema -->
+
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Etapas" asp-action="Index">
+                                    <i class="bi bi-diagram-3 me-2"></i> Etapas
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Edificios" asp-action="Index">
+                                    <i class="bi bi-building me-2"></i> Edificios
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Vehiculos" asp-action="Index">
+                                    <i class="bi bi-car-front me-2"></i> Vehículos
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
+                                    <i class="bi bi-info-circle me-2"></i> Info Detallada
+                                </a>
+                            </div>
+                        </li>
+
+
+
+
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+
+
+    </header>
+
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - <a asp-area="" asp-controller="Home" asp-action="Index">DLACCESS</a> - <a href="https://lrlvinfo-16ig.vercel.app/">Realizado por Luis Ley Viteri</a> -
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!--Js plugins-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/3.2.1/jquery.serializejson.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+
+
+
+
+</body>
+</html>

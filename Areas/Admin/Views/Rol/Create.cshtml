@@ -1,0 +1,67 @@
+﻿@using DlaccessCore.Models.Models.DatosPersonalesModels
+@model Rol
+
+@{
+    ViewData["Title"] = "Crear Rol";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+
+
+<br />
+<br />
+<h2 class="text-primary">Crear Rol</h2>
+
+<form method="post" asp-action="Create">
+    <div class="row px-2 offset-1 border">
+        
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+         <div class="col-10 offset-1 mt-4">
+         
+             <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="NombreRol"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="NombreRol" class="form-control" placeholder="Ingrese el Rol"/>
+                    <span asp-validation-for="NombreRol" class="text-danger"></span>
+                </div>
+            </div>
+
+         
+
+
+
+          <div class="form-group-row mt-3 ">
+              <div class="col-8 mt-3 ">
+                  <partial name="_VistaCrearVolver"/>
+              </div>
+          </div>
+
+        </div>
+
+    
+    
+    </div>
+
+
+
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

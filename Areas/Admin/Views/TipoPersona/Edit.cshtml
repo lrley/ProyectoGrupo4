@@ -1,0 +1,88 @@
+﻿@using DlaccessCore.Models.Models.DatosPersonalesModels
+@model TipoPersona
+
+@{
+    ViewData["Title"] = "Edit Genero";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+
+
+<br />
+<br />
+<h2 class="text-primary">Editar Genero</h2>
+
+<form method="post" asp-action="Edit">
+    <input type="hidden" asp-for="IdTipoPersona" />
+    <div class="row px-2 offset-1 border">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+
+
+        <div class="col-10 offset-1 mt-4">
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="NombreTipoPersona"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="NombreTipoPersona" class="form-control" placeholder="Ingrese el Tipo de Persona" />
+                    <span asp-validation-for="NombreTipoPersona" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row mt-4 mb-4">
+                <div class="col-4">
+                    <label asp-for="Estado"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="Estado" class="form-control">
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+            </div>
+
+
+
+
+            <div class="form-group-row mt-3 ">
+                <div class="col ">
+
+                    <div class="d-flex justify-content-center gap-4 mt-4 mb-4">
+                        <button type="submit" class="btn btn-primary "><i class="bi bi-plus-circle"></i>Editar</button>
+                        <a asp-action="Index" class="btn btn-success btn-sm">Volver Atrás</a>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
