@@ -1,10 +1,12 @@
-﻿using DlaccessCore.AccesoDatos.Data.Repository.IRepository;
-using DlaccessCore.Models.Models.DatosPersonalesModels;
+﻿using DlaccessCore.Models.Models.DatosPersonalesModels;
 using DlaccessCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
+using DlaccessCore.AccesoDatos.Data.IRepository;
+
 
 namespace DLACCESS.Areas.Admin.Controllers
 {
@@ -12,12 +14,18 @@ namespace DLACCESS.Areas.Admin.Controllers
     public class PersonaController : Controller
     {
 
+
+
+
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IContenedorTrabajo _contenedorTrabajo;
 
-        public PersonaController(IContenedorTrabajo contenedorTrabajo)
+        public PersonaController(IWebHostEnvironment hostingEnvironment, IContenedorTrabajo contenedorTrabajo)
         {
+            _hostingEnvironment = hostingEnvironment;
             _contenedorTrabajo = contenedorTrabajo;
         }
+
 
 
 
@@ -35,7 +43,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             {
                 Persona = new Persona(),
                 ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo(),
-                ListaTipoPersona= _contenedorTrabajo.TiposPersona.GetListaTipoPersona(),
+                ListaTipoPersona= _contenedorTrabajo.TipoPersona.GetListaTipoPersona(),
                 ListaRoles= _contenedorTrabajo.Rol.GetListaRoles(),
             };
             return View(vm);
@@ -85,7 +93,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             {
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
-                vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
+                vm.ListaTipoPersona = _contenedorTrabajo.TipoPersona.GetListaTipoPersona();
                 return View(vm);
             }
 
@@ -161,7 +169,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 Persona = persona,
                 ListaRoles = _contenedorTrabajo.Rol.GetListaRoles(),
                 ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo(),
-                ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona()
+                ListaTipoPersona = _contenedorTrabajo.TipoPersona.GetListaTipoPersona()
             };
 
             return View(vm);
@@ -180,9 +188,6 @@ namespace DLACCESS.Areas.Admin.Controllers
             vm.Persona.Apellido = vm.Persona.Apellido?.Trim().ToUpper();
             vm.Persona.Direccion = vm.Persona.Direccion?.Trim().ToUpper();
 
-
-            
-
             // ================= VALIDAR DUPLICADOS =================
             Console.WriteLine("ID VM: " + vm.Persona.Id);
             Console.WriteLine("ID VM (IdPersona): " + vm.Persona.Id);
@@ -195,7 +200,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 TempData["Error"] = "Ya existe otro usuario con esa cédula.";
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
-                vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
+                vm.ListaTipoPersona = _contenedorTrabajo.TipoPersona.GetListaTipoPersona();
                 return View(vm);
             }
 
@@ -208,7 +213,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 TempData["Error"] = "Ya existe otro usuario con ese email.";
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
-                vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
+                vm.ListaTipoPersona = _contenedorTrabajo.TipoPersona.GetListaTipoPersona();
                 return View(vm);
             }
 
@@ -226,7 +231,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             {
                 vm.ListaRoles = _contenedorTrabajo.Rol.GetListaRoles();
                 vm.ListaSexo = _contenedorTrabajo.Sexo.GetListaSexo();
-                vm.ListaTipoPersona = _contenedorTrabajo.TiposPersona.GetListaTipoPersona();
+                vm.ListaTipoPersona = _contenedorTrabajo.TipoPersona.GetListaTipoPersona();
                 return View(vm);
             }
 
@@ -316,14 +321,33 @@ namespace DLACCESS.Areas.Admin.Controllers
         {
 
             var objFromDb = _contenedorTrabajo.Persona.Get(id);
+            string rutaDirectorioPrincipal = _hostingEnvironment.WebRootPath;
+
+            // Quitar el "/" inicial de la ruta guardada en BD
+            var rutaRelativa = objFromDb.Img.TrimStart('/');
+
+
+            var rutaImagen = Path.Combine(rutaDirectorioPrincipal, rutaRelativa);
+
+                if (System.IO.File.Exists(rutaImagen))
+                {
+                    System.IO.File.Delete(rutaImagen);
+
+                }
+
+
+
             if (objFromDb == null)
             {
-                return Json(new { success = false, message = "Error Borrando Rol" });
+                return Json(new { success = false, message = "Error Borrando Persona" });
             }
 
-            _contenedorTrabajo.Persona.Remove(objFromDb);
+            // _contenedorTrabajo.Persona.Remove(objFromDb);
+            objFromDb.Estado = false;
+            _contenedorTrabajo.Persona.Update(objFromDb);
             _contenedorTrabajo.Save();
-            return Json(new { success = true, message = "Rol Borrado Correctamente" });
+            
+            return Json(new { success = true, message = "Persona Borrado Correctamente" });
 
 
         }

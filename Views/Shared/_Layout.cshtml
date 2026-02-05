@@ -49,10 +49,18 @@
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="Persona" asp-action="Index">
                                     <i class="bi bi-person-badge me-2"></i> Creacion de Personas
                                 </a>
-                                <div class="dropdown-divider"></div>
+                                                             
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
                                     <i class="bi bi-info-circle me-2"></i> Informacion Adicional
                                 </a>
+
+                                <div class="dropdown-divider"></div>
+                                
+                                <a class="dropdown-item" asp-area="Cliente" asp-controller="InfosDetalladas" asp-action="Index">
+                                    <i class="bi bi-info-circle me-2"></i> Crear Visitante
+                                </a>
+
+
                             </div>
                         </li>
 
@@ -69,7 +77,7 @@
                                     <i class="bi bi-diagram-3 me-2"></i> Crear Modelo de Vehiculo
                                 </a>
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="TiposVehiculo" asp-action="Index">
-                                    <i class="bi bi-car-front me-2"></i> Tipos de Vehículo
+                                    <i class="bi bi-car-front me-2"></i> Crear Tipos de Vehículo
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="Vechiulos" asp-action="Index">
@@ -85,17 +93,28 @@
                                 Informacion de Vivienda
                             </a>
                             <div class="dropdown-menu shadow-sm">
+                               
+                                
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Urbanizacion" asp-action="Create">
+                                    <i class="bi bi-door-open me-2"></i> Crear Urbanizacion
+                                </a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Etapa" asp-action="Create">
+                                    <i class="bi bi-door-open me-2"></i> Crear Etapa
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
                                 <!-- Crear Manzanas y Villas -->
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Manzanas" asp-action="Create">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Manzana" asp-action="Index">
                                     <i class="bi bi-diagram-3 me-2"></i> Crear Manzana
                                 </a>
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Villas" asp-action="Create">
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Villa" asp-action="Index">
                                     <i class="bi bi-house-door me-2"></i> Crear Villa
                                 </a>
 
                                 <!-- Crear Etapa -->
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Etapas" asp-action="Create">
-                                    <i class="bi bi-diagram-2 me-2"></i> Crear Etapa
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Casa" asp-action="Create">
+                                    <i class="bi bi-diagram-2 me-2"></i> Crear Casa
                                 </a>
 
                                 <div class="dropdown-divider"></div>
@@ -110,6 +129,11 @@
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="Edificios" asp-action="Create">
                                     <i class="bi bi-building me-2"></i> Crear Edificio
                                 </a>
+
+                              
+
+                               
+
                             </div>
                         </li>
 
@@ -133,12 +157,12 @@
                                     <i class="bi bi-person-badge me-2"></i> Personas
                                 </a>
 
-                                <div class="dropdown-divider"></div>
 
 
                                 <!-- Nuevas entidades del sistema -->
 
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Etapas" asp-action="Index">
+                                <!--      <a class="dropdown-item" asp-area="Admin" asp-controller="Etapas" asp-action="Index">
+                                <div class="dropdown-divider"></div>
                                     <i class="bi bi-diagram-3 me-2"></i> Etapas
                                 </a>
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="Edificios" asp-action="Index">
@@ -150,6 +174,8 @@
                                 <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
                                     <i class="bi bi-info-circle me-2"></i> Info Detallada
                                 </a>
+                                -->
+
                             </div>
                         </li>
 

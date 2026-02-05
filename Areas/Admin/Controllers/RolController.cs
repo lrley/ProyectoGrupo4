@@ -1,4 +1,4 @@
-﻿using DlaccessCore.AccesoDatos.Data.Repository.IRepository;
+﻿using DlaccessCore.AccesoDatos.Data.IRepository;
 using DlaccessCore.Models.Models.DatosPersonalesModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -182,8 +182,12 @@ namespace DLACCESS.Areas.Admin.Controllers
 
 
 
-            _contenedorTrabajo.Rol.Remove(objFromDb);
+            // _contenedorTrabajo.Rol.Remove(objFromDb);
+            objFromDb.Estado = false;
+            _contenedorTrabajo.Rol.Update(objFromDb);
             _contenedorTrabajo.Save();
+
+            //_contenedorTrabajo.Save();
             return Json(new { success = true, message = "Rol Borrado Correctamente" });
 
 

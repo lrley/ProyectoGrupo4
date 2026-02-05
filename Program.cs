@@ -1,6 +1,6 @@
 using DlaccessCore.AccesoDatos.Data;
+using DlaccessCore.AccesoDatos.Data.IRepository;
 using DlaccessCore.AccesoDatos.Data.Repository;
-using DlaccessCore.AccesoDatos.Data.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

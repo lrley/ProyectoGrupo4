@@ -1,5 +1,5 @@
-﻿using DlaccessCore.AccesoDatos.Data.Repository;
-using DlaccessCore.AccesoDatos.Data.Repository.IRepository;
+﻿using DlaccessCore.AccesoDatos.Data.IRepository;
+using DlaccessCore.AccesoDatos.Data.Repository;
 using DlaccessCore.Models.Models.DatosPersonalesModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -174,7 +174,21 @@ namespace DLACCESS.Areas.Admin.Controllers
                 return Json(new { success = false, message = "Error Borrando Genero" });
             }
 
-            _contenedorTrabajo.Sexo.Remove(objFromDb);
+
+            var personasConSexo = _contenedorTrabajo.Persona.GetAll()
+            .Any(p => p.IdSexo == id);
+
+            if (personasConSexo)
+            {
+                return Json(new { success = false, message = "No se puede eliminar el Sexo porque está asignado a una persona." });
+            }
+
+
+
+            // _contenedorTrabajo.Sexo.Remove(objFromDb);
+            //_contenedorTrabajo.Save();
+            objFromDb.Estado = false;
+            _contenedorTrabajo.Sexo.Update(objFromDb);
             _contenedorTrabajo.Save();
             return Json(new { success = true, message = "Genero Borrado Correctamente" });
 

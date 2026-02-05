@@ -1,5 +1,5 @@
-﻿using DlaccessCore.AccesoDatos.Data.Repository;
-using DlaccessCore.AccesoDatos.Data.Repository.IRepository;
+﻿using DlaccessCore.AccesoDatos.Data.IRepository;
+using DlaccessCore.AccesoDatos.Data.Repository;
 using DlaccessCore.Models.Models.DatosPersonalesModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +48,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 tipoPersona.NombreTipoPersona = tipoPersona.NombreTipoPersona?.Trim().ToUpper();
 
                 // Validar duplicados
-                var existe = _contenedorTrabajo.TiposPersona
+                var existe = _contenedorTrabajo.TipoPersona
                     .GetAll()
                     .Any(tp => tp.NombreTipoPersona == tipoPersona.NombreTipoPersona);
 
@@ -63,7 +63,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 tipoPersona.UpdatedAt = DateTime.Now;
                 tipoPersona.Estado = true;
 
-                _contenedorTrabajo.TiposPersona.Add(tipoPersona);
+                _contenedorTrabajo.TipoPersona.Add(tipoPersona);
                 _contenedorTrabajo.Save();
 
                 TempData["Success"] = "Tipo de persona creado correctamente.";
@@ -82,7 +82,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var tipoPersona = _contenedorTrabajo.TiposPersona.Get(id);
+            var tipoPersona = _contenedorTrabajo.TipoPersona.Get(id);
             if (tipoPersona == null)
             {
                 return NotFound();
@@ -105,7 +105,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 tipoPersona.NombreTipoPersona = tipoPersona.NombreTipoPersona?.Trim().ToUpper();
 
                 // Validar duplicados (excluyendo el mismo registro que se está editando)
-                var existe = _contenedorTrabajo.TiposPersona
+                var existe = _contenedorTrabajo.TipoPersona
                     .GetAll()
                     .Any(tp => tp.NombreTipoPersona == tipoPersona.NombreTipoPersona
                                && tp.IdTipoPersona != tipoPersona.IdTipoPersona);
@@ -117,7 +117,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 }
 
                 // Obtener registro desde la BD
-                var tipoPersonaDb = _contenedorTrabajo.TiposPersona.Get(tipoPersona.IdTipoPersona);
+                var tipoPersonaDb = _contenedorTrabajo.TipoPersona.Get(tipoPersona.IdTipoPersona);
                 if (tipoPersonaDb == null)
                 {
                     TempData["Error"] = "No se encontró el registro a actualizar.";
@@ -129,7 +129,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 tipoPersonaDb.Estado = tipoPersona.Estado;
                 tipoPersonaDb.UpdatedAt = DateTime.Now;
 
-                _contenedorTrabajo.TiposPersona.Update(tipoPersonaDb);
+                _contenedorTrabajo.TipoPersona.Update(tipoPersonaDb);
                 _contenedorTrabajo.Save();
 
                 TempData["Success"] = "Tipo de persona actualizado correctamente.";
@@ -155,14 +155,14 @@ namespace DLACCESS.Areas.Admin.Controllers
 
         public IActionResult GetAll()
         {
-            var listaTipoPersona = _contenedorTrabajo.TiposPersona.GetAll();
+            var listaTipoPersona = _contenedorTrabajo.TipoPersona.GetAll();
             return Json(new { data = listaTipoPersona });
         }
 
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            var objFromDb = _contenedorTrabajo.TiposPersona.Get(id);
+            var objFromDb = _contenedorTrabajo.TipoPersona.Get(id);
             if (objFromDb == null)
             {
                 return Json(new { success = false, message = "Error Borrando Tipo Persona" });
@@ -177,7 +177,10 @@ namespace DLACCESS.Areas.Admin.Controllers
             }
 
 
-            _contenedorTrabajo.TiposPersona.Remove(objFromDb);
+            // _contenedorTrabajo.TipoPersona.Remove(objFromDb);
+            // _contenedorTrabajo.Save();
+            objFromDb.Estado = false;
+            _contenedorTrabajo.TipoPersona.Update(objFromDb);
             _contenedorTrabajo.Save();
             return Json(new { success = true, message = "Tipo Persona Borrado Correctamente" });
         }
