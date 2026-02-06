@@ -67,13 +67,47 @@
                          <input name="Persona.Clave" type="password" class="form-control" placeholder="Dejar vacío para no cambiar clave" />
                         <span asp-validation-for="Persona.Clave" class="text-danger"></span>
                     </div>
+
+                    <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="Persona.IdRol" class="form-label">Rol</label>
+                                @Html.DropDownListFor(
+                                    m => m.Persona.IdRol,
+                                    Model.ListaRoles,
+                                    "-Seleccione el rol-",
+                                    new { @class = "selectpicker", data_live_search = "true" }
+                                )
+                                <span asp-validation-for="Persona.IdRol" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Persona.IdSexo" class="form-label">Género</label>
+                                @Html.DropDownListFor(
+                                    m => m.Persona.IdSexo,
+                                    Model.ListaSexo,
+                                    "-Seleccione el género-",
+                                    new { @class = "selectpicker", data_live_search = "true" }
+                                )
+                                <span asp-validation-for="Persona.IdSexo" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Persona.IdTipoPersona" class="form-label">Tipo de Persona</label>
+                                @Html.DropDownListFor(
+                                    m => m.Persona.IdTipoPersona,
+                                    Model.ListaTipoPersona,
+                                    "-Seleccione el tipo-",
+                                    new { @class = "selectpicker", data_live_search = "true" }
+                                )
+                                <span asp-validation-for="Persona.IdTipoPersona" class="text-danger"></span>
+                            </div>
+                        </div> 
                     
                 <!--   <div class="col-md-6">
                         <label asp-for="Persona.Clave" class="form-label"></label>
                         <input asp-for="Persona.Clave" type="password" class="form-control" placeholder="Ingrese la clave" />
                         <span asp-validation-for="Persona.Clave" class="text-danger"></span>
                     </div>
-                 -->
                     <div class="col-md-4">
                         <label asp-for="Persona.IdRol" class="form-label">Rol</label>
                         @Html.DropDownListFor(m => m.Persona.IdRol, Model.ListaRoles, "-Seleccione el rol-", new { @class = "form-select" })
@@ -92,6 +126,7 @@
                         <span asp-validation-for="Persona.IdTipoPersona" class="text-danger"></span>
                     </div>
 
+                 -->
 
 
                     <!--************************************************************************FOTO**************************************************************************-->

@@ -1,0 +1,107 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model EdificioVM
+
+@{
+    ViewData["Title"] = "Crear Edificio";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+
+
+<br />
+<br />
+<h2 class="text-primary">Crear Edificio</h2>
+
+<form method="post" asp-action="Create">
+    <div class="row px-2 offset-1 border">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <div class="col-10 offset-1 mt-4">
+
+
+
+            <div class="form-group row mt-4 mb-4">
+                <div class="col-4">
+                    <label asp-for="Edificio.NombreFamilia"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Edificio.NombreFamilia" class="form-control" placeholder="Ingrese la Familia o nombre del Piso y Dpto" />
+                    <span asp-validation-for="Edificio.NombreFamilia" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Selects -->
+            <div class="row g-3 mt-3">
+
+                <!-- Nombre del Edificio -->
+                <div class="col-md-4">
+                    <label asp-for="Edificio.NombreEdificio" class="form-label">Edificio</label>
+                    @Html.DropDownListFor(m => m.Edificio.NombreEdificio,
+                    new List<SelectListItem>
+                                        {
+                                        new SelectListItem { Value = "", Text = "-Seleccione el Edificio-" },
+                                        new SelectListItem { Value = "Edificio Principal", Text = "Edificio Principal" }
+                                        },
+                                        null,
+                                        new { @class = "selectpicker form-select", data_live_search = "true" })
+                    <span asp-validation-for="Edificio.NombreEdificio" class="text-danger"></span>
+                </div>
+                <!-- Departamento -->
+                <div class="col-md-4">
+                    <label asp-for="Edificio.DepartamentoId" class="form-label">Departamento</label>
+                    @Html.DropDownListFor(m => m.Edificio.DepartamentoId,
+                                        Model.ListaDepartamentos,
+                                        "-Seleccione el Departamento-",
+                                        new { @class = "selectpicker form-select", data_live_search = "true" })
+                    <span asp-validation-for="Edificio.DepartamentoId" class="text-danger"></span>
+                </div>
+
+                <!-- Piso -->
+                <div class="col-md-4">
+                    <label asp-for="Edificio.PisoId" class="form-label">Piso</label>
+                    @Html.DropDownListFor(m => m.Edificio.PisoId,
+                                        Model.ListaPisos,
+                                        "-Seleccione el Piso-",
+                                        new { @class = "selectpicker form-select", data_live_search = "true" })
+                    <span asp-validation-for="Edificio.PisoId" class="text-danger"></span>
+                </div>
+
+
+            </div>
+
+
+
+            <div class="form-group-row mt-3 ">
+                <div class="col-8 mt-3 ">
+                    <partial name="_VistaCrearVolver" />
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+

@@ -1,24 +1,22 @@
 ﻿using DlaccessCore.AccesoDatos.Data.IRepository;
-using DlaccessCore.Models.Models.ViviendaViewModels.Casa;
+
+using DlaccessCore.Models.Models.ViviendaViewModels.Edificio;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DLACCESS.Areas.Admin.Controllers
 {
-
     [Area("Admin")]
-    public class VillaController : Controller
+    public class DepartamentoController : Controller
     {
-
-
-
-
 
         private readonly IContenedorTrabajo _contenedorTrabajo;
 
-        public VillaController(IContenedorTrabajo contenedorTrabajo)
+
+        public DepartamentoController(IContenedorTrabajo contenedorTrabajo)
         {
             _contenedorTrabajo = contenedorTrabajo;
         }
+
 
         public IActionResult Index()
         {
@@ -26,7 +24,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         }
 
 
-       
+
 
         /******************************************POST***********************************************************************/
 
@@ -38,32 +36,32 @@ namespace DLACCESS.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Villa villa)
+        public IActionResult Create(Departamento departamento)
         {
             if (ModelState.IsValid)
             {
                 // Normalizar a mayúsculas
-                villa.NombreVilla = villa.NombreVilla?.Trim().ToUpper();
+                departamento.NombreDepart = departamento.NombreDepart?.Trim().ToUpper();
 
                 // Validar duplicados
-                var existe = _contenedorTrabajo.Villa
+                var existe = _contenedorTrabajo.Departamento
                     .GetAll()
-                    .Any(m => m.NombreVilla == villa.NombreVilla);
+                    .Any(m => m.NombreDepart == departamento.NombreDepart);
 
                 if (existe)
                 {
-                    ModelState.AddModelError("NombreVilla", "El nombre ingresado ya está registrado en otra villa activa.");
-                    return View(villa);
+                    ModelState.AddModelError("NombreMz", "Ya existe un Departamento con ese nombre.");
+                    return View(departamento);
                 }
 
-                _contenedorTrabajo.Villa.Add(villa);
+                _contenedorTrabajo.Departamento.Add(departamento);
                 _contenedorTrabajo.Save();
 
-                TempData["success"] = "Villa creada correctamente";
+                TempData["success"] = "Departamento creada correctamente";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(villa);
+            return View(departamento);
         }
         /************************************************FIN CREATE*****************************************************************/
 
@@ -73,7 +71,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var objFromDb = _contenedorTrabajo.Villa.Get(id);
+            var objFromDb = _contenedorTrabajo.Departamento.Get(id);
 
             if (objFromDb == null)
             {
@@ -85,52 +83,66 @@ namespace DLACCESS.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Villa villa)
+        public IActionResult Edit(Departamento departamento)
         {
             if (ModelState.IsValid)
             {
                 // Normalizar a mayúsculas
-                villa.NombreVilla = villa.NombreVilla?.Trim().ToUpper();
+                departamento.NombreDepart = departamento.NombreDepart?.Trim().ToUpper();
 
                 // Validar duplicados en otro Id
-                var existe = _contenedorTrabajo.Villa
+                var existe = _contenedorTrabajo.Departamento
                     .GetAll()
-                    .Any(m => m.NombreVilla == villa.NombreVilla && m.Id != villa.Id);
+                    .Any(m => m.NombreDepart == departamento.NombreDepart && m.Id != departamento.Id);
 
                 if (existe)
                 {
-                    ModelState.AddModelError("NombreMz", "El nombre ingresado ya está registrado en otra villa activa.");
-                    return View(villa);
+                    ModelState.AddModelError("NombreDepart", "Ya existe otro Departamento con ese nombre.");
+                    return View(departamento);
                 }
 
-                _contenedorTrabajo.Villa.Update(villa);
+                _contenedorTrabajo.Departamento.Update(departamento);
                 _contenedorTrabajo.Save();
 
-                TempData["success"] = "Villa editada correctamente";
+                TempData["success"] = "´Departamento editada correctamente";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(villa);
+            return View(departamento);
         }
 
+
+
+
+
+
+
+
+
+
+
+
         /*****************************************************************************************************************/
 
 
 
 
 
+
         /*****************************************************************************************************************/
+
 
         #region LLamadas a la API
 
         public IActionResult GetAll()
         {
-            //var listaManzana = _contenedorTrabajo.Manzana.GetAll();
-            var listaVillas = _contenedorTrabajo.Villa
+            //var listaManzana = _contenedorTrabajo.Departamento.GetAll();
+            var listaDepartamento = _contenedorTrabajo.Departamento
                 .GetAll();
             // .Where(m => m.Estado == true);
-            return Json(new { data = listaVillas });
+            return Json(new { data = listaDepartamento });
         }
+
 
 
 
@@ -138,21 +150,19 @@ namespace DLACCESS.Areas.Admin.Controllers
         public IActionResult Delete(int id)
         {
 
-            var objFromDb = _contenedorTrabajo.Villa.Get(id);
-
-
+            var objFromDb = _contenedorTrabajo.Departamento.Get(id);
 
             if (objFromDb == null)
             {
-                return Json(new { success = false, message = "Error Borrando Villa" });
+                return Json(new { success = false, message = "Error Borrando Departamento" });
             }
 
             //_contenedorTrabajo.Manzana.Remove(objFromDb);
             objFromDb.Estado = false;
-            _contenedorTrabajo.Villa.Update(objFromDb);
+            _contenedorTrabajo.Departamento.Update(objFromDb);
             _contenedorTrabajo.Save();
 
-            return Json(new { success = true, message = "Villa Borrada Correctamente" });
+            return Json(new { success = true, message = "Departamento Borrado Correctamente" });
 
 
         }

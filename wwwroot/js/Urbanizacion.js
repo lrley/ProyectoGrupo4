@@ -6,15 +6,15 @@ $(document).ready(function () {
 
 
 function cargarDatatable() {
-    dataTable = $("#tblVillas").DataTable({
+    dataTable = $("#tblUrbanizacion").DataTable({
         "ajax": {
-            "url": "/Admin/Villa/GetAll",
+            "url": "/Admin/Urbanizacion/GetAll",
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
             { "data": "Id", "width": "10%" },
-            { "data": "NombreVilla", "width": "25%" },
+            { "data": "NombreUrbanizacion", "width": "25%" },
             {
                 "data": "CreatedAt",
                 "width": "20%",
@@ -46,11 +46,11 @@ function cargarDatatable() {
                 "data": "Id",
                 "render": function (data) {
                     return `<div class="text-center">
-                            <a href="/Admin/Villa/Edit/${data}" class="btn btn-warning text-white" style="cursor:pointer; width:60px;">
+                            <a href="/Admin/Urbanizacion/Edit/${data}" class="btn btn-warning text-white" style="cursor:pointer; width:60px;">
                                <i class="bi bi-pencil-square"></i> 
                             </a>
                             &nbsp;
-                            <a onclick=Delete("/Admin/Villa/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer; width:60px;">
+                            <a onclick=Delete("/Admin/Urbanizacion/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer; width:60px;">
                                 <i class="bi bi-trash"></i> 
                             </a>
                         </div>`;

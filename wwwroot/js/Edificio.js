@@ -6,18 +6,21 @@ $(document).ready(function () {
 
 
 function cargarDatatable() {
-    dataTable = $("#tblVillas").DataTable({
+    dataTable = $("#tblEdificio").DataTable({
         "ajax": {
-            "url": "/Admin/Villa/GetAll",
+            "url": "/Admin/Edificio/GetAll",
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
-            { "data": "Id", "width": "10%" },
-            { "data": "NombreVilla", "width": "25%" },
+            { "data": "Id", "width": "8%" },
+            { "data": "NombreFamilia", "width": "20%" },
+            { "data": "NombreEdificio", "width": "20%" },
+            { "data": "Departamento.NombreDepart", "width": "10%" },
+            { "data": "Piso.NombrePiso", "width": "10%" },
             {
                 "data": "CreatedAt",
-                "width": "20%",
+                "width": "15%",
                 "render": function (data) {
                     if (!data) return "";
                     return new Date(data).toLocaleString("es-EC")
@@ -25,7 +28,7 @@ function cargarDatatable() {
             },
             {
                 "data": "UpdatedAt",
-                "width": "20%",
+                "width": "15%",
                 "render": function (data) {
                     if (!data) return "";
                     return new Date(data).toLocaleString("es-EC")
@@ -45,12 +48,12 @@ function cargarDatatable() {
             {
                 "data": "Id",
                 "render": function (data) {
-                    return `<div class="text-center">
-                            <a href="/Admin/Villa/Edit/${data}" class="btn btn-warning text-white" style="cursor:pointer; width:60px;">
+                    return `<div class="d-flex justify-content-center gap-2">
+                            <a href="/Admin/Edificio/Edit/${data}" class="btn btn-warning btn-sm text-white" style="cursor:pointer; width:60px;">
                                <i class="bi bi-pencil-square"></i> 
                             </a>
                             &nbsp;
-                            <a onclick=Delete("/Admin/Villa/Delete/${data}") class="btn btn-danger text-white" style="cursor:pointer; width:60px;">
+                            <a onclick=Delete("/Admin/Edificio/Delete/${data}") class="btn btn-danger btn-sm text-white" style="cursor:pointer; width:60px;">
                                 <i class="bi bi-trash"></i> 
                             </a>
                         </div>`;

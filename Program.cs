@@ -1,6 +1,7 @@
 using DlaccessCore.AccesoDatos.Data;
 using DlaccessCore.AccesoDatos.Data.IRepository;
 using DlaccessCore.AccesoDatos.Data.Repository;
+using DlaccessCore.Models.Models.IdentidadDeUsuario;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +13,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 
-//Agregar contenedor de trabajo al contenedor Ioc de inyección de dependencias
+//Agregar contenedor de trabajo al contenedor Ioc de inyecciï¿½n de dependencias
 builder.Services.AddScoped<IContenedorTrabajo, ContenedorTrabajo>();
 
 builder.Services.AddControllersWithViews()

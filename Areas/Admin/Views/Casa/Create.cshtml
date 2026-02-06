@@ -1,0 +1,94 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model CasaVM
+
+@{
+    ViewData["Title"] = "Crear Casa";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+
+
+<br />
+<br />
+<h2 class="text-primary">Crear Casa</h2>
+
+<form method="post" asp-action="Create">
+    <div class="row px-2 offset-1 border">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <div class="col-10 offset-1 mt-4">
+
+            <div class="form-group row mt-4 mb-4">
+                <div class="col-4">
+                    <label asp-for="Casa.NombreFamilia"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Casa.NombreFamilia" class="form-control" placeholder="Ingrese la Familia o nombre de la MZ y Villa" />
+                    <span asp-validation-for="Casa.NombreFamilia" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label asp-for="Casa.ManzanaId" class="form-label"></label>
+                        @Html.DropDownListFor(
+                        m => m.Casa.ManzanaId,
+                                        Model.ListaManzana,
+                                        "-Seleccione la Manzana-",
+                                        new { @class = "selectpicker", data_live_search = "true" }
+                                        )
+                    <span asp-validation-for="Casa.ManzanaId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Casa.VillaId" class="form-label"></label>
+                        @Html.DropDownListFor(
+                                        m => m.Casa.VillaId,
+                                        Model.ListaVilla,
+                                        "-Seleccione la Villa-",
+                                        new { @class = "selectpicker", data_live_search = "true" }
+                                        )
+                    <span asp-validation-for="Casa.VillaId" class="text-danger"></span>
+                    </div>
+
+            </div>
+
+
+
+
+            <div class="form-group-row mt-3 ">
+                <div class="col-8 mt-3 ">
+                    <partial name="_VistaCrearVolver" />
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
