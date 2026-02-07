@@ -1,4 +1,7 @@
 ﻿@page
+
+@using DlaccessCore.Utilidades
+
 @model RegisterModel
 @{
     ViewData["Title"] = "Registro de Usuario";
@@ -13,7 +16,12 @@
 
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
     <div class="row justify-content-center w-100">
-        <div class="col-md-8 col-lg-8">
+          <!-- Logo arriba (opcional, igual que en Register) -->
+        <div class="text-center ">
+            <img src="~/image/logo_paginaweb.png" alt="Logo DLACCESS" class="img-fluid mb-1" style="max-height: 210px;">
+            
+        </div>
+        <div class="col-md-8 col-lg-7">
             <!-- más ancho -->
             <div class="card shadow-lg border-0 rounded-3">
 
@@ -30,25 +38,31 @@
                 <!-- Body con más aire -->
                 <div class="card-body p-5">
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4" role="alert"></div>
 
                         <!-- Nombre -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Nombre" class="form-control" autocomplete="nombre" aria-required="true" placeholder="Ingresa el Nombre" />
+                            <input asp-for="Input.Nombre" 
+                                   class="form-control  border border-dark"
+                            autocomplete="nombre" aria-required="true" 
+                            placeholder="Ingresa el Nombre" />
                             <label asp-for="Input.Nombre"><i class="bi bi-envelope-fill me-2"></i> Nombre</label>
                             <span asp-validation-for="Input.Nombre" class="text-danger"></span>
                         </div>
 
+
+
+
                         <!-- Direccion -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Cedula" class="form-control" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Cedula" />
+                            <input asp-for="Input.Cedula" class="form-control  border border-dark" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Cedula" />
                             <label asp-for="Input.Cedula"><i class="bi bi-envelope-fill me-2"></i> Cedula</label>
                             <span asp-validation-for="Input.Cedula" class="text-danger"></span>
                         </div>
 
                         <!-- Email -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Ingresa el Email: name@dley.com.ec" />
+                            <input asp-for="Input.Email" class="form-control  border border-dark" autocomplete="username" aria-required="true" placeholder="Ingresa el Email: name@dley.com.ec" />
                             <label asp-for="Input.Email"><i class="bi bi-envelope-fill me-2"></i> Email</label>
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
@@ -56,59 +70,84 @@
 
                         <!-- Direccion -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Direccion" class="form-control" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Direccion" />
+                            <input asp-for="Input.Direccion" class="form-control  border border-dark" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Direccion" />
                             <label asp-for="Input.Direccion"><i class="bi bi-envelope-fill me-2"></i> Direccion</label>
                             <span asp-validation-for="Input.Direccion" class="text-danger"></span>
                         </div>
                         
                       <!-- PAIS Y CIUDAD -->
-<div class="row mb-3">
-    <div class="col-md-6">
-        <label class="form-label">País</label>
-        @Html.DropDownListFor(
-            m => m.Input.Pais,
-            new SelectList(Model.PaisesCiudadesVM.PaisesCiudades.Keys, Model.Input.Pais),
-            "-Seleccione el país-",
-            new { @class = "selectpicker form-control form-control-lg w-100", data_live_search = "true", id = "ddlPais" }
-        )
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">Ciudad</label>
-        @{
-            var paisActual = Model.Input?.Pais ?? "Ecuador";
-            var ciudadesDisponibles = Model.PaisesCiudadesVM.PaisesCiudades.ContainsKey(paisActual) 
-                ? Model.PaisesCiudadesVM.PaisesCiudades[paisActual] 
-                : Model.PaisesCiudadesVM.PaisesCiudades["Ecuador"];
-        }
-        @Html.DropDownListFor(
-            m => m.Input.Ciudad,
-            new SelectList(ciudadesDisponibles),
-            "-Seleccione la ciudad-",
-            new { @class = "selectpicker form-control form-control-lg w-100", data_live_search = "true", id = "ddlCiudad" }
-        )
-    </div>
-</div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 ">
+                                <label class="form-label">País</label>
+                                @Html.DropDownListFor(
+                                    m => m.Input.Pais,
+                                    new SelectList(Model.PaisesCiudadesVM.PaisesCiudades.Keys, Model.Input.Pais),
+                                    "-Seleccione el país-",
+                                                                new { @class = "selectpicker form-control form-control-lg w-100  border border-dark", data_live_search = "true", id = "ddlPais" }
+                                )
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Ciudad</label>
+                                @{
+                                    var paisActual = Model.Input?.Pais ?? "Ecuador";
+                                    var ciudadesDisponibles = Model.PaisesCiudadesVM.PaisesCiudades.ContainsKey(paisActual) 
+                                        ? Model.PaisesCiudadesVM.PaisesCiudades[paisActual] 
+                                        : Model.PaisesCiudadesVM.PaisesCiudades["Ecuador"];
+                                }
+                                @Html.DropDownListFor(
+                                    m => m.Input.Ciudad,
+                                    new SelectList(ciudadesDisponibles),
+                                    "-Seleccione la ciudad-",
+                                                                new { @class = "selectpicker form-control form-control-lg w-100  border border-dark", data_live_search = "true", id = "ddlCiudad" }
+                                )
+                            </div>
+                        </div>
 
                         <!-- Telefono -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="telefono" aria-required="true" placeholder="Ingresa el Telefono" />
+                            <input asp-for="Input.PhoneNumber" class="form-control  border border-dark" autocomplete="telefono" aria-required="true" placeholder="Ingresa el Telefono" />
                             <label asp-for="Input.PhoneNumber"><i class="bi bi-envelope-fill me-2"></i> Telefono</label>
                             <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                         </div>
 
                         <!-- Password -->
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <input asp-for="Input.Password" type="password" class="form-control  border border-dark" autocomplete="new-password" aria-required="true" placeholder="password" />
                             <label asp-for="Input.Password"><i class="bi bi-lock-fill me-2"></i> Ingrese la Contraseña</label>
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
 
                         <!-- Confirm Password -->
                         <div class="form-floating mb-4">
-                            <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <input asp-for="Input.ConfirmPassword" type="password" class="form-control  border border-dark" autocomplete="new-password" aria-required="true" placeholder="password" />
                             <label asp-for="Input.ConfirmPassword"><i class="bi bi-lock-fill me-2"></i> Confirmar Contraseña</label>
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                         </div>
+
+                        <div class="form-group row align-items-center mb-4 mt-4">
+                            <div class="col-6">
+                                <h4>Rol de Usuario</h4>
+                            </div>
+                            <div class="col-6 d-flex">
+                                <div class="form-check form-check-inline ">
+                                    <input class="form-check-input  border border-dark" type="radio" name="radUsuarioRole" value="@CNT.Administrador" id="rolAdmin">
+                                    <label class="form-check-label" for="rolAdmin">@CNT.Administrador</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input  border border-dark" type="radio" name="radUsuarioRole" value="@CNT.Registrado" id="rolRegistrado">
+                                    <label class="form-check-label" for="rolRegistrado">@CNT.Registrado</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input  border border-dark" type="radio" name="radUsuarioRole" value="@CNT.Cliente" id="rolCliente" checked>
+                                    <label class="form-check-label" for="rolCliente">@CNT.Cliente</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
 
                         <!-- Botón con tus colores -->
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary bg-dark">
@@ -117,10 +156,10 @@
                     </form>
                 </div>
 
-                <!-- Footer con tus colores -->
-                <div class="card-footer text-center">
-                    <small class="text-muted">
-                        ¿Ya tienes cuenta? <a asp-area="Identity" asp-page="/Account/Login" class="text-decoration-none">Inicia sesión aquí</a>
+                <!-- Footer -->
+                <div class="card-footer text-center bg-white text-bg-dark py-3 ">
+                    <small class="text-dark">
+                        ¿Ya tienes cuenta? <a asp-area="Identity" asp-page="/Account/Login" class="text-decoration-none text-info fw-bold">Inicia sesión</a>
                     </small>
                 </div>
             </div>

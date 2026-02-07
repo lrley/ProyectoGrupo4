@@ -4,6 +4,7 @@
 
 using DlaccessCore.Models.Models.IdentidadDeUsuario;
 using DlaccessCore.Models.ViewModels;
+using DlaccessCore.Utilidades;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +32,7 @@ namespace DLACCESS.Areas.Identity.Pages.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
@@ -42,7 +44,8 @@ namespace DLACCESS.Areas.Identity.Pages.Account
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -50,6 +53,7 @@ namespace DLACCESS.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -200,7 +204,42 @@ namespace DLACCESS.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("El Usuario se creo con Exito..");
+
+                    if (!await _roleManager.RoleExistsAsync(CNT.Administrador)) {
+                        await _roleManager.CreateAsync(new IdentityRole(CNT.Administrador));
+                        await _roleManager.CreateAsync(new IdentityRole(CNT.Registrado));
+                        await _roleManager.CreateAsync(new IdentityRole(CNT.Cliente));
+                    }
+
+                    //Obtener el Rol Seleccionado
+                    string rol = Request.Form["radUsuarioRole"].ToString();
+
+                    if (rol == CNT.Administrador) { 
+                        await _userManager.AddToRoleAsync(user, CNT.Administrador);
+
+                    }
+                    else
+                    {
+                        if (rol == CNT.Registrado)
+                        {
+                            await _userManager.AddToRoleAsync(user, CNT.Registrado);
+
+                        }
+                        else
+                        {
+                            await _userManager.AddToRoleAsync(user, CNT.Cliente);
+
+                        }
+
+
+                    }
+
+
+
+                        _logger.LogInformation("El Usuario se creo con Exito..");
+
+
+
 
                     //var userId = await _userManager.GetUserIdAsync(user);
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
