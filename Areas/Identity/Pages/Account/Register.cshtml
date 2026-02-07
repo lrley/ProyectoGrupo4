@@ -1,67 +1,244 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Registro";
+    ViewData["Title"] = "Registro de Usuario";
+    var inputNull = Model.Input == null;
+    var vmNull = Model.PaisesCiudadesVM == null;
+    var diccionarioNull = Model.PaisesCiudadesVM?.PaisesCiudades == null;
+
+
 }
 
-<h1>@ViewData["Title"]</h1>
+ @* <h1 class="text-center ">@ViewData["Title"]</h1>  *@
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-8">
+            <!-- más ancho -->
+            <div class="card shadow-lg border-0 rounded-3">
+
+                <!-- Logo arriba -->
+                @* <div class="text-center mt-3">
+                    <img src="~/images/logo.png" alt="Logo DLACCESS" class="img-fluid mb-2" style="max-height: 100px;">
+                </div> *@
+
+                <!-- Header con tus colores -->
+                <div class="card-header bg-primary text-white bg-dark text-center">
+                    <h3><i class="bi bi-person-plus-fill me-2"></i> Registro de Usuario</h3>
+                </div>
+
+                <!-- Body con más aire -->
+                <div class="card-body p-5">
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                        <!-- Nombre -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Nombre" class="form-control" autocomplete="nombre" aria-required="true" placeholder="Ingresa el Nombre" />
+                            <label asp-for="Input.Nombre"><i class="bi bi-envelope-fill me-2"></i> Nombre</label>
+                            <span asp-validation-for="Input.Nombre" class="text-danger"></span>
                         </div>
-                    </form>
-                }
-            }
-        </section>
+
+                        <!-- Direccion -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Cedula" class="form-control" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Cedula" />
+                            <label asp-for="Input.Cedula"><i class="bi bi-envelope-fill me-2"></i> Cedula</label>
+                            <span asp-validation-for="Input.Cedula" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Ingresa el Email: name@dley.com.ec" />
+                            <label asp-for="Input.Email"><i class="bi bi-envelope-fill me-2"></i> Email</label>
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+
+
+                        <!-- Direccion -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Direccion" class="form-control" autocomplete="direccion" aria-required="true" placeholder="Ingresa la Direccion" />
+                            <label asp-for="Input.Direccion"><i class="bi bi-envelope-fill me-2"></i> Direccion</label>
+                            <span asp-validation-for="Input.Direccion" class="text-danger"></span>
+                        </div>
+                        
+                      <!-- PAIS Y CIUDAD -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label">País</label>
+        @Html.DropDownListFor(
+            m => m.Input.Pais,
+            new SelectList(Model.PaisesCiudadesVM.PaisesCiudades.Keys, Model.Input.Pais),
+            "-Seleccione el país-",
+            new { @class = "selectpicker form-control form-control-lg w-100", data_live_search = "true", id = "ddlPais" }
+        )
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Ciudad</label>
+        @{
+            var paisActual = Model.Input?.Pais ?? "Ecuador";
+            var ciudadesDisponibles = Model.PaisesCiudadesVM.PaisesCiudades.ContainsKey(paisActual) 
+                ? Model.PaisesCiudadesVM.PaisesCiudades[paisActual] 
+                : Model.PaisesCiudadesVM.PaisesCiudades["Ecuador"];
+        }
+        @Html.DropDownListFor(
+            m => m.Input.Ciudad,
+            new SelectList(ciudadesDisponibles),
+            "-Seleccione la ciudad-",
+            new { @class = "selectpicker form-control form-control-lg w-100", data_live_search = "true", id = "ddlCiudad" }
+        )
     </div>
 </div>
 
+                        <!-- Telefono -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="telefono" aria-required="true" placeholder="Ingresa el Telefono" />
+                            <label asp-for="Input.PhoneNumber"><i class="bi bi-envelope-fill me-2"></i> Telefono</label>
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Password" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.Password"><i class="bi bi-lock-fill me-2"></i> Ingrese la Contraseña</label>
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-floating mb-4">
+                            <input asp-for="Input.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                            <label asp-for="Input.ConfirmPassword"><i class="bi bi-lock-fill me-2"></i> Confirmar Contraseña</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <!-- Botón con tus colores -->
+                        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary bg-dark">
+                            <i class="bi bi-check-circle me-2"></i> Registrarse
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Footer con tus colores -->
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        ¿Ya tienes cuenta? <a asp-area="Identity" asp-page="/Account/Login" class="text-decoration-none">Inicia sesión aquí</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+   
+
+
+
+
+
+</div>
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        var paisesCiudades = @Html.Raw(
+                                    System.Text.Json.JsonSerializer.Serialize(Model.PaisesCiudadesVM.PaisesCiudades)
+                    );
+
+    function cerrarSelectAlSeleccionar(selector) {
+        $(document).on('changed.bs.select', selector, function () {
+            var $btn = $(this).parent().find('.dropdown-toggle');
+            if ($btn.attr('aria-expanded') === 'true') {
+                $btn.dropdown('toggle');
+            }
+        });
+    }
+
+        function cargarCiudades(pais, ddlCiudad, ciudadSeleccionada) {
+            ddlCiudad.selectpicker('destroy');
+            ddlCiudad.empty();
+            ddlCiudad.append(
+                $('<option>', {
+                    value: '',
+                    text: '-Seleccione la ciudad-',
+                    disabled: true
+                })
+            );
+
+            var ciudades = paisesCiudades[pais] || [];
+            $.each(ciudades, function (i, ciudad) {
+                ddlCiudad.append(
+                    $('<option>', { value: ciudad, text: ciudad })
+                );
+            });
+
+            // Si hay una ciudad seleccionada, establecerla
+            if (ciudadSeleccionada) {
+                ddlCiudad.val(ciudadSeleccionada);
+            }
+
+            ddlCiudad.selectpicker();
+        }
+
+        $(document).ready(function () {
+            var ddlPais = $('#ddlPais');
+            var ddlCiudad = $('#ddlCiudad');
+
+            cerrarSelectAlSeleccionar('#ddlPais');
+            cerrarSelectAlSeleccionar('#ddlCiudad');
+
+            // Obtener valores del servidor
+            var paisInicial = '@Model.Input.Pais';
+            var ciudadInicial = '@Model.Input.Ciudad';
+
+            // Cargar ciudades con el país inicial
+            if (paisInicial) {
+                cargarCiudades(paisInicial, ddlCiudad, ciudadInicial);
+            }
+
+            // Evento change del país
+            ddlPais.on('change', function () {
+                cargarCiudades($(this).val(), ddlCiudad, null);
+            });
+        });
+    </script>
 }
+
+
+
+<!--
+<div class="col-md-6 col-md-offset-2">
+    <section>
+        <h3>Use another service to register.</h3>
+        <hr />
+@{
+    /*  if ((Model.ExternalLogins?.Count ?? 0) == 0)
+      {
+          <div>
+              <p>
+                  There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                  about setting up this ASP.NET application to support logging in via external services</a>.
+              </p>
+          </div>
+      }
+      else
+      {
+          <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+              <div>
+                  <p>
+                      @foreach (var provider in Model.ExternalLogins!)
+                      {
+                          <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                      }
+                  </p>
+              </div>
+          </form>
+      }*/
+}
+    </section>
+</div>
+-->

@@ -3,6 +3,7 @@
 #nullable disable
 
 using DlaccessCore.Models.Models.IdentidadDeUsuario;
+using DlaccessCore.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,19 +24,23 @@ using System.Threading.Tasks;
 
 namespace DLACCESS.Areas.Identity.Pages.Account
 {
+    
+
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _emailStore;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserStore<ApplicationUser> _userStore;
+        private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+        public PaisesCiudadesVM PaisesCiudadesVM { get; set; }
+
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            IUserStore<ApplicationUser> userStore,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -75,10 +81,12 @@ namespace DLACCESS.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "El Email es Requerido")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+         
+
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -98,14 +106,67 @@ namespace DLACCESS.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+
+
+
+            [Required(ErrorMessage = "El Nombre es Obligatorio")]
+            public string Nombre { get; set; }
+
+            [Required(ErrorMessage = "La cédula es obligatoria")]
+            [StringLength(13, MinimumLength = 10)]
+            [RegularExpression(@"^\d{10,13}$", ErrorMessage = "La cédula solo puede contener números")]
+            public string Cedula { get; set; }
+
+
+            [Required(ErrorMessage = "El Direccion es Obligatorio")]
+            [StringLength(100, ErrorMessage = "La Direccion no puede exceder 100 dígitos")]
+            public string Direccion { get; set; }
+
+            [Required(ErrorMessage = "La Ciudad es Obligatoria")]
+            public string Ciudad { get; set; }
+
+            [Required(ErrorMessage = "El Pais es Obligatorio")]
+            public string Pais { get; set; }
+
+            [Phone(ErrorMessage = "El número de teléfono no es válido")]
+            [StringLength(15, ErrorMessage = "El teléfono no puede exceder 15 dígitos")]
+            public string PhoneNumber { get; set; }
+
+            public bool Permiso { get; set; } = false;
+
+            public bool Estado { get; set; } = true;
+
+            public DateTime CreatedAt { get; set; } = DateTime.Now;
+            public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+
+
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+            returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            PaisesCiudadesVM = new PaisesCiudadesVM();
+
+
+            Input = new InputModel
+            {
+                Pais = "Ecuador",
+                Ciudad = "Guayaquil"
+            };
+
+      
+
+
         }
+
+
+
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -113,7 +174,25 @@ namespace DLACCESS.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+
+                Input.Nombre = Input.Nombre?.ToUpper();
+                Input.Email = Input.Email?.ToLower();
+               // Input.Pais = Input.Pais?.ToUpper();
+                Input.Direccion = Input.Direccion?.ToUpper();
+                //Input.Ciudad = Input.Ciudad?.ToUpper();
+
                 var user = CreateUser();
+
+                user.Nombre = Input.Nombre;
+                user.Cedula = Input.Cedula;
+                user.Email = Input.Email;
+                user.Direccion = Input.Direccion;
+                user.Pais = Input.Pais;
+                user.Ciudad = Input.Ciudad;
+                user.PhoneNumber = Input.PhoneNumber;
+
+    
+
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -121,19 +200,19 @@ namespace DLACCESS.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("El Usuario se creo con Exito..");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                    //var userId = await _userManager.GetUserIdAsync(user);
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    //var callbackUrl = Url.Page(
+                    //    "/Account/ConfirmEmail",
+                    //    pageHandler: null,
+                    //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    //    protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    //await _emailSender.SendEmailAsync(Input.Email, "Confirma tu Email",
+                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -151,31 +230,32 @@ namespace DLACCESS.Areas.Identity.Pages.Account
                 }
             }
 
+            PaisesCiudadesVM = new PaisesCiudadesVM();
             // If we got this far, something failed, redisplay form
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<IdentityUser>)_userStore;
+            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
 }
