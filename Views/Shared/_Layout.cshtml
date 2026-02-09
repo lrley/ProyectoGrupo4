@@ -33,6 +33,12 @@
 
     <header>
 
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+        {
+            
+        }
+
+
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark shadow-sm">
             <div class="container-fluid">
                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
@@ -47,34 +53,35 @@
                             <a class="nav-link text-white fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                           </li>
                        -->
-
-
-               
-
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
-                                Informacion de Usuarios
-                            </a>
-                            <div class="dropdown-menu shadow-sm">
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="Persona" asp-action="Index">
-                                    <i class="bi bi-person-badge me-2"></i> Creacion de Personas
+                           @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
+                                    Informacion de Usuarios
                                 </a>
-                                                             
-                                <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
-                                    <i class="bi bi-info-circle me-2"></i> Informacion Adicional
-                                </a>
+                                <div class="dropdown-menu shadow-sm">
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Usuarios" asp-action="Index">
+                                        <i class="bi bi-person-badge me-2"></i> Usuarios
+                                    </a>
 
-                                <div class="dropdown-divider"></div>
-                                
-                                <a class="dropdown-item" asp-area="Cliente" asp-controller="InfosDetalladas" asp-action="Index">
-                                    <i class="bi bi-info-circle me-2"></i> Crear Visitante
-                                </a>
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Persona" asp-action="Index">
+                                        <i class="bi bi-person-badge me-2"></i> Creacion de Personas
+                                    </a>
+
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="InfosDetalladas" asp-action="Index">
+                                        <i class="bi bi-info-circle me-2"></i> Informacion Adicional
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item" asp-area="Cliente" asp-controller="InfosDetalladas" asp-action="Index">
+                                        <i class="bi bi-info-circle me-2"></i> Crear Visitante
+                                    </a>
 
 
-                            </div>
-                        </li>
-
+                                </div>
+                            </li>
+                        }
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
@@ -148,6 +155,11 @@
                             </div>
                         </li>
 
+
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Administrador"))
+                        {
+
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-white fw-semibold" data-bs-toggle="dropdown" href="#">
                                 Configuracion
@@ -190,7 +202,7 @@
                             </div>
                         </li>
 
-
+                        }
 
 
                     </ul>
@@ -198,6 +210,7 @@
                 </div>
             </div>
         </nav>
+
 
 
     </header>
@@ -212,7 +225,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - <a asp-area="" asp-controller="Home" asp-action="Index">DLACCESS</a> - <a href="https://lrlvinfo-16ig.vercel.app/">Realizado por Luis Ley Viteri</a> -
+            &copy; 2026 - <a asp-area="" asp-controller="Home" asp-action="Index">DLACCESS</a> - <a href="https://lrlvinfo-16ig.vercel.app/">Realizado por Grupo 4</a> -
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
