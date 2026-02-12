@@ -24,6 +24,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             return View();
         }
 
+        /*******************************************************************************************************************************************************/
 
         [HttpGet]
         public IActionResult Create()
@@ -35,6 +36,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 Casa = new Casa(),
                 ListaManzana = _contenedorTrabajo.Manzana.GetListaManzanas(),
                 ListaVilla = _contenedorTrabajo.Villa.GetListaVilla(),
+                ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas(),
 
 
             };
@@ -51,13 +53,12 @@ namespace DLACCESS.Areas.Admin.Controllers
             {
                 vm.ListaManzana = _contenedorTrabajo.Manzana.GetListaManzanas();
                 vm.ListaVilla = _contenedorTrabajo.Villa.GetListaVilla();
-                
+                vm.ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas();
+
                 return View(vm);
             }
 
-            // ======================================================
-            // 1️⃣ GUARDAR PERSONA SIN IMAGEN (para obtener el ID)
-            // ======================================================
+         
             vm.Casa.CreatedAt = DateTime.Now;
             vm.Casa.UpdatedAt = DateTime.Now;
             vm.Casa.Estado = true;
@@ -88,6 +89,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 Casa = casa,
                 ListaManzana = _contenedorTrabajo.Manzana.GetListaManzanas(),
                 ListaVilla = _contenedorTrabajo.Villa.GetListaVilla(),
+                ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas(),
             };
 
             return View(vm);
@@ -103,6 +105,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             {
                 vm.ListaManzana = _contenedorTrabajo.Manzana.GetListaManzanas();
                 vm.ListaVilla = _contenedorTrabajo.Villa.GetListaVilla();
+                vm.ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas();
                 return View(vm);
             }
 
@@ -116,6 +119,7 @@ namespace DLACCESS.Areas.Admin.Controllers
             casaFromDb.NombreFamilia = vm.Casa.NombreFamilia;
             casaFromDb.ManzanaId = vm.Casa.ManzanaId;
             casaFromDb.VillaId = vm.Casa.VillaId;
+            casaFromDb.EtapaId = vm.Casa.EtapaId;
             casaFromDb.UpdatedAt = DateTime.Now;
             casaFromDb.Estado = vm.Casa.Estado;
 
@@ -141,7 +145,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         {
             
             //var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa");
-            var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa");
+            var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa,Etapa");
             // .Where(m => m.Estado == true);
             return Json(new { data = listaCasa });
         }

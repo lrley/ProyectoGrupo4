@@ -17,7 +17,7 @@
 
 <br />
 <br />
-<h2 class="text-primary">Crear Casa</h2>
+<h2 class="text-dark">Crear Casa</h2>
 
 <form method="post" asp-action="Create">
     <div class="row px-2 offset-1 border">
@@ -34,7 +34,7 @@
                     <label asp-for="Casa.NombreFamilia"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="Casa.NombreFamilia" class="form-control" placeholder="Ingrese la Familia o nombre de la MZ y Villa" />
+                    <input asp-for="Casa.NombreFamilia" class="form-control border border-dark" placeholder="Ingrese la Familia o nombre de la MZ y Villa" />
                     <span asp-validation-for="Casa.NombreFamilia" class="text-danger"></span>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                         m => m.Casa.ManzanaId,
                                         Model.ListaManzana,
                                         "-Seleccione la Manzana-",
-                                        new { @class = "selectpicker", data_live_search = "true" }
+                                        new { @class = "selectpicker border border-dark", data_live_search = "true" }
                                         )
                     <span asp-validation-for="Casa.ManzanaId" class="text-danger"></span>
                     </div>
@@ -59,10 +59,22 @@
                                         m => m.Casa.VillaId,
                                         Model.ListaVilla,
                                         "-Seleccione la Villa-",
-                                        new { @class = "selectpicker", data_live_search = "true" }
+                                        new { @class = "selectpicker border border-dark", data_live_search = "true" }
                                         )
                     <span asp-validation-for="Casa.VillaId" class="text-danger"></span>
                     </div>
+
+
+                <div class="col-md-4">
+                    <label asp-for="Casa.EtapaId" class="form-label"></label>
+                    @Html.DropDownListFor(
+                                        m => m.Casa.EtapaId,
+                                        Model.ListaEtapa,
+                                        "-Seleccione la Etapa-",
+                                        new { @class = "selectpicker border border-dark", data_live_search = "true" }
+                                        )
+                    <span asp-validation-for="Casa.EtapaId" class="text-danger"></span>
+                </div>
 
             </div>
 

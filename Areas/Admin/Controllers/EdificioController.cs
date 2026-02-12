@@ -35,8 +35,8 @@ namespace DLACCESS.Areas.Admin.Controllers
 
                 Edificio = new Edificio(),
                 ListaDepartamentos = _contenedorTrabajo.Departamento.GetListaDepartamentos(),
-                ListaPisos = _contenedorTrabajo.Piso.GetListaPisos()
-
+                ListaPisos = _contenedorTrabajo.Piso.GetListaPisos(),
+                ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas(),
 
             };
             return View(vm);
@@ -47,12 +47,13 @@ namespace DLACCESS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EdificioVM vm)
         {
-            vm.Edificio.NombreFamilia = vm.Edificio.NombreFamilia?.Trim();
+            vm.Edificio.NombreFamilia = vm.Edificio.NombreFamilia?.Trim().ToUpper();
 
             if (!ModelState.IsValid)
             {
                 vm.ListaDepartamentos = _contenedorTrabajo.Departamento.GetListaDepartamentos();
                 vm.ListaPisos = _contenedorTrabajo.Piso.GetListaPisos();
+                vm.ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas();
 
                 return View(vm);
             }
@@ -92,6 +93,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 Edificio = edificio,
                 ListaDepartamentos = _contenedorTrabajo.Departamento.GetListaDepartamentos(),
                 ListaPisos = _contenedorTrabajo.Piso.GetListaPisos(),
+                ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas(),
             };
 
             return View(vm);
@@ -101,12 +103,13 @@ namespace DLACCESS.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EdificioVM vm)
         {
-            vm.Edificio.NombreFamilia = vm.Edificio.NombreFamilia?.Trim();
+            vm.Edificio.NombreFamilia = vm.Edificio.NombreFamilia?.Trim().ToUpper();
 
             if (!ModelState.IsValid)
             {
                 vm.ListaDepartamentos = _contenedorTrabajo.Departamento.GetListaDepartamentos();
                 vm.ListaPisos = _contenedorTrabajo.Piso.GetListaPisos();
+                vm.ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas();
                 return View(vm);
             }
 
@@ -119,8 +122,11 @@ namespace DLACCESS.Areas.Admin.Controllers
             // Actualizar campos
             EdificioFromDb.NombreFamilia = vm.Edificio.NombreFamilia;
             EdificioFromDb.NombreEdificio = vm.Edificio.NombreEdificio;
+            
             EdificioFromDb.DepartamentoId = vm.Edificio.DepartamentoId;
             EdificioFromDb.PisoId = vm.Edificio.PisoId;
+            EdificioFromDb.EtapaId = vm.Edificio.EtapaId;
+
             EdificioFromDb.UpdatedAt = DateTime.Now;
             EdificioFromDb.Estado = vm.Edificio.Estado;
 
@@ -148,7 +154,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         {
 
             //var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa");
-            var listaedificio = _contenedorTrabajo.Edificio.GetAll(includeProperties: "Departamento,Piso");
+            var listaedificio = _contenedorTrabajo.Edificio.GetAll(includeProperties: "Departamento,Piso,Etapa");
             // .Where(m => m.Estado == true);
             return Json(new { data = listaedificio });
         }

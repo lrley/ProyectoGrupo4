@@ -18,6 +18,7 @@ function cargarDatatable() {
             { "data": "NombreEdificio", "width": "20%" },
             { "data": "Departamento.NombreDepart", "width": "10%" },
             { "data": "Piso.NombrePiso", "width": "10%" },
+            { "data": "Etapa.NombreEtapa", "width": "10%" },
             {
                 "data": "CreatedAt",
                 "width": "15%",

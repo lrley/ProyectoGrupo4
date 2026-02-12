@@ -76,16 +76,18 @@
         
         <div class="overlay">
             <img src="/image/dl_access_logo_biometrics.png" alt="Logo" class="logo" />
+            @if (!User.Identity.IsAuthenticated)
+            {
             <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary bg-dark btn-start">Iniciar</a>
+            }
         </div>
 
         <div class="credits-container">
             
-            <h1 class="text-dark">DESARROLLO DE SOFTWARE GRUPO # 4</h1>
+            <h1 class="text-dark">URBANIZACION ALTAGRACIA</h1>
             <ul class="credits">
-                <li>ALLAN STEVEN MANZANILLAS LOZADA</li>
-                <li>JONATHAN ANDREW CAMPOS GOMEZ</li>
-                <li>LUIS ROBERTO LEY VITERI</li>
+                <li></li>
+                
             </ul>
         </div>
 

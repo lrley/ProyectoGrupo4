@@ -17,6 +17,7 @@ function cargarDatatable() {
             { "data": "NombreFamilia", "width": "20%" },
             { "data": "Manzana.NombreMz", "width": "10%" },
             { "data": "Villa.NombreVilla", "width": "10%" },
+            { "data": "Etapa.NombreEtapa", "width": "10%" },
             {
                 "data": "CreatedAt",
                 "width": "15%",

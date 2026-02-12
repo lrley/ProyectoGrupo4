@@ -87,6 +87,16 @@ namespace DLACCESS.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                // Redirige al dashboard o página principal
+                returnUrl ??= Url.Content("~/Index");
+                Response.Redirect(returnUrl);
+                return;
+            }
+
+
+
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);

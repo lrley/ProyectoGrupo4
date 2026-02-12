@@ -1,0 +1,104 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model EtapaVM
+
+@{
+    ViewData["Title"] = "Editar Etapa";
+}
+
+<div class="container mt-4">
+    <!-- Mensajes -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Etapa</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="Edit">
+                <input type="hidden" asp-for="Etapa.Id" />
+
+                <!-- Validaciones -->
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+                }
+
+                <div class="row g-3">
+                    <!-- Nombre Familia -->
+                    <div class="col-md-6">
+                        <label asp-for="Etapa.NombreEtapa" class="form-label"></label>
+                        <input asp-for="Etapa.NombreEtapa" class="form-control border border-dark"
+                               placeholder="Ingrese la Familia o nombre de la MZ y Villa" />
+                        <span asp-validation-for="Etapa.NombreEtapa" class="text-danger"></span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label asp-for="Etapa.Estado" class="form-label"></label>
+                        <select asp-for="Etapa.Estado" class="form-select border border-dark">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                        <span asp-validation-for="Etapa.Estado" class="text-danger "></span>
+
+                        <!-- Badge dinámico -->
+                        <div class="mt-2">
+                            @if (Model.Etapa.Estado)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-hand-thumbs-up-fill "></i> Activo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-eye-slash-fill"></i> Inactivo
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selects -->
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <label asp-for="Etapa.UrbanizacionId" class="form-label"></label>
+                        @Html.DropDownListFor(m => m.Etapa.UrbanizacionId,
+                        Model.ListaUrbanizaciones,
+                                                "-Seleccione la Etapa-",
+                                                new { @class = "selectpicker form-select border border-dark", data_live_search = "true" })
+                        <span asp-validation-for="Etapa.UrbanizacionId" class=" text-danger"></span>
+                    </div>
+
+                   
+                </div>
+
+                <!-- Botones -->
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-save"></i> Guardar cambios
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            $('.selectpicker').selectpicker();
+        });
+    </script>
+}

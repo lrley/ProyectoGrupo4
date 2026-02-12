@@ -1,0 +1,108 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model VehiculoVM
+
+@{
+    ViewData["Title"] = "Crear Vehículo";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["Success"]</div>
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow border-2 border-dark">
+                <div class="card-header bg-dark text-white text-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-car-front-fill me-2"></i>
+                        Crear Vehículo
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+                    }
+
+                    <form method="post" asp-action="Create">
+
+                        <div class="row">
+
+                            <!-- Año -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Vehiculo.NombreVehiculo" class="form-label fw-bold">Año</label>
+                                <input asp-for="Vehiculo.NombreVehiculo"
+                                       type="text"
+                                       pattern="[0-9]+"
+                                       class="form-control border-dark"
+                                       placeholder="Ingrese el año (ej. 2026)" />
+                                <span asp-validation-for="Vehiculo.NombreVehiculo" class="text-danger"></span>
+                            </div>
+
+                            <!-- Color -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Vehiculo.Color" class="form-label fw-bold">Color</label>
+                                <input asp-for="Vehiculo.Color"
+                                       class="form-control border-dark"
+                                       placeholder="Ingrese el color" />
+                                <span asp-validation-for="Vehiculo.Color" class="text-danger"></span>
+                            </div>
+
+                            <!-- Marca -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Vehiculo.IdMarca" class="form-label fw-bold">Marca</label>
+                                @Html.DropDownListFor(m => m.Vehiculo.IdMarca,
+                                Model.ListaMarcas,
+                                                                "-Seleccione la Marca-",
+                                                                new { @class = "form-select border-dark" })
+                                <span asp-validation-for="Vehiculo.IdMarca" class="text-danger"></span>
+                            </div>
+
+                            <!-- Tipo de Vehículo -->
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Vehiculo.IdTipoVehiculo" class="form-label fw-bold">Tipo de Vehículo</label>
+                                @Html.DropDownListFor(m => m.Vehiculo.IdTipoVehiculo,
+                                                                Model.ListaTipoVehiculos,
+                                                                "-Seleccione el Tipo-",
+                                                                new { @class = "form-select border-dark" })
+                                <span asp-validation-for="Vehiculo.IdTipoVehiculo" class="text-danger"></span>
+                            </div>
+
+                            <!-- Modelo -->
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="Vehiculo.IdModelo" class="form-label fw-bold">Modelo</label>
+                                @Html.DropDownListFor(m => m.Vehiculo.IdModelo,
+                                                                Model.ListaModelos,
+                                                                "-Seleccione el Modelo-",
+                                                                new { @class = "form-select border-dark" })
+                                <span asp-validation-for="Vehiculo.IdModelo" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="text-center mt-4">
+                            <partial name="_VistaCrearVolver" />
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

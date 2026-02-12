@@ -276,8 +276,21 @@ namespace DLACCESS.Areas.Admin.Controllers
                 if (!Directory.Exists(carpetaFotos))
                     Directory.CreateDirectory(carpetaFotos);
 
+                // 🔴 Eliminar la imagen anterior si existe
+                if (!string.IsNullOrEmpty(personaDB.Img))
+                {
+                    string rutaAnterior = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", personaDB.Img.TrimStart('/'));
+                    if (System.IO.File.Exists(rutaAnterior))
+                    {
+                        System.IO.File.Delete(rutaAnterior);
+                    }
+                }
+
+
+
                 string apellidos = personaDB.Apellido.Replace(" ", "_");
-                string nombreArchivo = $"{apellidos}_{personaDB.CreatedAt:yyyyMMdd_HHmmss}_{personaDB.Id}.jpg";
+                string fechaEdicion = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string nombreArchivo = $"{apellidos}_{fechaEdicion}_{personaDB.Id}.jpg";
                 string rutaCompleta = Path.Combine(carpetaFotos, nombreArchivo);
 
                 // 📸 Desde cámara

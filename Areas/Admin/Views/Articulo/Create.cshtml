@@ -1,0 +1,239 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model ArticuloVM
+
+@{
+    ViewData["Title"] = "Crear Articulo";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Crear Articulo</h4>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div id="errorMsg" class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
+            <form method="post" asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Articulo.Nombre" class="form-label"></label>
+                        <input asp-for="Articulo.Nombre" class="form-control" placeholder="Nombre de Articulo" />
+                        <span asp-validation-for="Articulo.Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Articulo.CategoriaId" class="form-label">Seleccione la Cateogira</label>
+                        @Html.DropDownListFor(
+                        m => m.Articulo.CategoriaId,
+                                                Model.ListaCategorias,
+                                                "-Seleccione la Categoria-",
+                                                new { @class = "selectpicker", data_live_search = "true" }
+                                                )
+                        <span asp-validation-for="Articulo.CategoriaId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Articulo.Descripcion" class="form-label"></label>
+                        <input asp-for="Articulo.Descripcion" class="form-control" placeholder="" />
+                        <span asp-validation-for="Articulo.Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <!--************************************************************************FOTO**************************************************************************-->
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Seleccione método de imagen</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionArchivo" value="archivo" checked onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionArchivo">Subir desde archivo</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionCamara" value="camara" onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionCamara">Tomar con cámara</label>
+                        </div>
+                    </div>
+
+                    <!-- Subir archivo (correcto) -->
+                    <div id="divArchivo" class="mb-3">
+                        <label class="form-label">Imagen</label>
+                        <input asp-for="ArchivoImagen" type="file" class="form-control" onchange="previewArchivo(this)" />
+                        <span asp-validation-for="ArchivoImagen" class="text-danger"></span>
+                    </div>
+
+
+
+
+
+                    <!-- Tomar foto -->
+                    <div id="divCamara" class="mb-3" style="display:none;">
+                        <label>Tomar Foto</label>
+                        <video id="video" width="320" height="240" autoplay class="border mb-2" style="display:none;"></video>
+                        <button type="button" class="btn btn-primary" onclick="iniciarCamara()">
+                            <i class="bi bi-camera-video"></i> Abrir Cámara
+                        </button>
+                        <button type="button" class="btn btn-success mt-2" onclick="tomarFoto()">
+                            <i class="bi bi-camera-fill"></i> Tomar Foto
+                        </button>
+                        <canvas id="canvas" style="display:none;"></canvas>
+                        <input type="hidden" asp-for="FotoBase64" />
+                    </div>
+
+                    <!-- Vista previa única -->
+                    <img id="previewImagen" src="" class="img-thumbnail mt-2" style="display:none; max-width:200px;" />
+
+
+                    <!--************************************************************************FIN DE FOTO**************************************************************************-->
+
+                    <div class="row g-3">
+
+                        <!-- Fecha de Ingreso -->
+                        <div class="col-md-4">
+                            <label asp-for="Articulo.FechaCreacion" class="form-label">Fecha de Creacion</label>
+                            <input asp-for="Articulo.FechaCreacion" type="date" class="form-control form-control-sm" />
+                        </div>
+
+                       
+                    </div>
+
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+
+
+
+    <script>
+        $(function () {
+            $('.selectpicker').selectpicker();
+        });
+    </script>
+
+
+
+    <script>
+                 $(document).ready(function () {
+             $("#errorMsg").fadeIn();
+         });
+
+
+
+         const video = document.getElementById('video');
+         const canvas = document.getElementById('canvas');
+        // const fotoBase64 = document.getElementById('fotoBase64');
+         const fotoBase64 = document.querySelector('input[name="FotoBase64"]');
+         const previewImagen = document.getElementById('previewImagen');
+         let streamActivo = null;
+
+         function toggleImagen() {
+             const opcion = document.querySelector('input[name="opcionImagen"]:checked').value;
+
+             // Reset preview y valores
+             previewImagen.src = "";
+             previewImagen.style.display = "none";
+             fotoBase64.value = "";
+             document.querySelector('input[type="file"]').value = "";
+
+             if (opcion === 'archivo') {
+                 document.getElementById('divArchivo').style.display = 'block';
+                 document.getElementById('divCamara').style.display = 'none';
+                 detenerCamara();
+             } else {
+                 document.getElementById('divArchivo').style.display = 'none';
+                 document.getElementById('divCamara').style.display = 'block';
+             }
+         }
+
+         function iniciarCamara() {
+             previewImagen.src = "";
+             previewImagen.style.display = "none";
+             fotoBase64.value = "";
+
+             navigator.mediaDevices.getUserMedia({ video: true })
+                 .then(stream => {
+                     streamActivo = stream;
+                     video.srcObject = stream;
+                     video.style.display = "block";
+                 })
+                 .catch(err => {
+                     alert("No se pudo acceder a la cámara: " + err);
+                 });
+         }
+
+         function tomarFoto() {
+             if (!streamActivo) {
+                 alert("Primero abre la cámara.");
+                 return;
+             }
+             canvas.width = video.videoWidth;
+             canvas.height = video.videoHeight;
+             canvas.getContext('2d').drawImage(video, 0, 0);
+             const dataUrl = canvas.toDataURL('image/jpeg');
+             fotoBase64.value = dataUrl;
+
+             previewImagen.src = dataUrl;
+             previewImagen.style.display = "block";
+
+             detenerCamara();
+         }
+
+         // ✅ Aquí va tu función previewArchivo
+         function previewArchivo(input) {
+             const file = input.files[0];
+             if (file) {
+                 const reader = new FileReader();
+                 reader.onload = function(e) {
+                     previewImagen.src = e.target.result;
+                     previewImagen.style.display = "block";
+                     fotoBase64.value = ""; // limpiar si había foto tomada
+                 };
+                 reader.readAsDataURL(file);
+             } else {
+                 previewImagen.src = "";
+                 previewImagen.style.display = "none";
+             }
+         }
+
+         function detenerCamara() {
+             if (streamActivo) {
+                 streamActivo.getTracks().forEach(track => track.stop());
+                 streamActivo = null;
+             }
+             video.srcObject = null;
+             video.style.display = "none";
+         }
+    </script>
+}
+
+
+
