@@ -24,7 +24,6 @@ namespace DLACCESS.Areas.Admin.Controllers
             return View();
         }
 
-        /*******************************************************************************************************************************************************/
 
         [HttpGet]
         public IActionResult Create()
@@ -48,7 +47,7 @@ namespace DLACCESS.Areas.Admin.Controllers
         public async Task<IActionResult> Create(CasaVM vm)
         {
             vm.Casa.NombreFamilia = vm.Casa.NombreFamilia?.Trim();
-                              
+
             if (!ModelState.IsValid)
             {
                 vm.ListaManzana = _contenedorTrabajo.Manzana.GetListaManzanas();
@@ -58,11 +57,13 @@ namespace DLACCESS.Areas.Admin.Controllers
                 return View(vm);
             }
 
-         
+            // ======================================================
+            // 1️⃣ GUARDAR PERSONA SIN IMAGEN (para obtener el ID)
+            // ======================================================
             vm.Casa.CreatedAt = DateTime.Now;
             vm.Casa.UpdatedAt = DateTime.Now;
             vm.Casa.Estado = true;
-         
+
 
             _contenedorTrabajo.Casa.Add(vm.Casa);
             _contenedorTrabajo.Save();
@@ -143,7 +144,7 @@ namespace DLACCESS.Areas.Admin.Controllers
 
         public IActionResult GetAll()
         {
-            
+
             //var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa");
             var listaCasa = _contenedorTrabajo.Casa.GetAll(includeProperties: "Manzana,Villa,Etapa");
             // .Where(m => m.Estado == true);

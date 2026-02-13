@@ -105,4 +105,16 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+  
+    <script>
+        $(function () {
+            $('.select-busqueda').select2({
+                width: '100%',
+                placeholder: "Escriba para buscar...",
+                allowClear: true
+            });
+        });
+    </script>
+
 }
