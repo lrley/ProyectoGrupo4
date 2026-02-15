@@ -4,6 +4,7 @@ using DlaccessCore.Models.Models.RelacionesModels;
 using DlaccessCore.Models.Models.ViviendaViewModels.Casa;
 using DlaccessCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace DLACCESS.Areas.Admin.Controllers
@@ -13,22 +14,26 @@ namespace DLACCESS.Areas.Admin.Controllers
     {
 
 
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IContenedorTrabajo _contenedorTrabajo;
 
-        public InfoDetallladaController(IContenedorTrabajo contenedorTrabajo)
+        public InfoDetallladaController(IWebHostEnvironment hostingEnvironment, IContenedorTrabajo contenedorTrabajo)
         {
+            _hostingEnvironment = hostingEnvironment;
             _contenedorTrabajo = contenedorTrabajo;
         }
 
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //public IActionResult Index()
+        //{
+        //    return View();
+        //}
 
 
 
         /*******************************************************************************************************************************************************/
+
+
 
         // ==================== CREATE GET ====================
         [HttpGet]
@@ -47,89 +52,83 @@ namespace DLACCESS.Areas.Admin.Controllers
         }
 
         // ==================== CREATE POST ====================
+        // ==================== CREATE POST ====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(InfoDetalladaVM vm)
         {
-            // Remover validación de campos que no usamos en este formulario
-            ModelState.Remove("FotoBase64");
-            ModelState.Remove("ArchivoImagen");
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // ========== VALIDACIONES ==========
+                    // ========== VALIDACIONES DE UNICIDAD (solo si tienen valor) ==========
 
-                    // 1. Validar que la persona existe
-                    var persona = _contenedorTrabajo.Persona.Get(vm.InfoDetallada.IdPersona);
-
-                    if (persona == null)
-                    {
-                        ModelState.AddModelError("InfoDetallada.IdPersona",
-                            "La persona seleccionada no existe");
-                        RecargarListas(vm);
-                        return View(vm);
-                    }
-
-                    // 2. Validar unicidad de Placa (si se ingresó)
+                    // Validar Placa solo si no está vacía
                     if (!string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroPlaca))
                     {
-                        var placaExiste = _contenedorTrabajo.InfoDetallada.GetFirstOrDefault(
-                            filter: i => i.NumeroPlaca == vm.InfoDetallada.NumeroPlaca
-                        );
+                        var placaExiste = _contenedorTrabajo.InfoDetallada
+                            .GetFirstOrDefault(i => i.NumeroPlaca == vm.InfoDetallada.NumeroPlaca);
 
                         if (placaExiste != null)
                         {
-                            ModelState.AddModelError("InfoDetallada.NumeroPlaca",
-                                "Esta placa ya está registrada");
-                            RecargarListas(vm);
+                            ModelState.AddModelError("InfoDetallada.NumeroPlaca", "La placa ya está registrada");
+                            CargarListas(vm);
                             return View(vm);
                         }
                     }
 
-                    // 3. Validar unicidad de Tag (si se ingresó)
+                    // Validar Tag solo si no está vacío
                     if (!string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroTag))
                     {
-                        var tagExiste = _contenedorTrabajo.InfoDetallada.GetFirstOrDefault(
-                            filter: i => i.NumeroTag == vm.InfoDetallada.NumeroTag
-                        );
+                        var tagExiste = _contenedorTrabajo.InfoDetallada
+                            .GetFirstOrDefault(i => i.NumeroTag == vm.InfoDetallada.NumeroTag);
 
                         if (tagExiste != null)
                         {
-                            ModelState.AddModelError("InfoDetallada.NumeroTag",
-                                "Este tag ya está registrado");
-                            RecargarListas(vm);
+                            ModelState.AddModelError("InfoDetallada.NumeroTag", "El número de Tag ya está registrado");
+                            CargarListas(vm);
                             return View(vm);
                         }
                     }
 
-                    // 4. Validar unicidad de Tarjeta (si se ingresó)
+                    // Validar Tarjeta solo si no está vacía
                     if (!string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroTarjeta))
                     {
-                        var tarjetaExiste = _contenedorTrabajo.InfoDetallada.GetFirstOrDefault(
-                            filter: i => i.NumeroTarjeta == vm.InfoDetallada.NumeroTarjeta
-                        );
+                        var tarjetaExiste = _contenedorTrabajo.InfoDetallada
+                            .GetFirstOrDefault(i => i.NumeroTarjeta == vm.InfoDetallada.NumeroTarjeta);
 
                         if (tarjetaExiste != null)
                         {
-                            ModelState.AddModelError("InfoDetallada.NumeroTarjeta",
-                                "Esta tarjeta ya está registrada");
-                            RecargarListas(vm);
+                            ModelState.AddModelError("InfoDetallada.NumeroTarjeta", "El número de Tarjeta ya está registrado");
+                            CargarListas(vm);
                             return View(vm);
                         }
                     }
 
+                    // ========== CREAR ENTIDAD ==========
+                    var infoDetallada = new InfoDetallada
+                    {
+                        IdPersona = vm.InfoDetallada.IdPersona,
+                        // Usar null si no tiene valor o es 0, para evitar problemas con FK
+                        CasaId = vm.InfoDetallada.CasaId > 0 ? vm.InfoDetallada.CasaId : null,
+                        IdEdificio = vm.InfoDetallada.IdEdificio > 0 ? vm.InfoDetallada.IdEdificio : null,
+                        IdVehiculo = vm.InfoDetallada.IdVehiculo > 0 ? vm.InfoDetallada.IdVehiculo : null,
+                        NumeroPlaca = string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroPlaca) ? null : vm.InfoDetallada.NumeroPlaca.ToUpper(),
+                        NumeroTag = string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroTag) ? null : vm.InfoDetallada.NumeroTag,
+                        NumeroTarjeta = string.IsNullOrWhiteSpace(vm.InfoDetallada.NumeroTarjeta) ? null : vm.InfoDetallada.NumeroTarjeta,
+                        ImgVehiculo = vm.InfoDetallada.ImgVehiculo,
+                        Permiso = vm.InfoDetallada.Permiso,
+                        FechaCreacion = DateTime.Now,
+                        Estado = true,
+                        CreatedAt = DateTime.Now
+                    };
+
                     // ========== GUARDAR ==========
-
-                    // Setear valores por defecto
-                    vm.InfoDetallada.FechaCreacion = DateTime.Now;
-                    vm.InfoDetallada.Permiso = true;
-
-                    _contenedorTrabajo.InfoDetallada.Add(vm.InfoDetallada);
+                    _contenedorTrabajo.InfoDetallada.Add(infoDetallada);
                     _contenedorTrabajo.Save();
 
-                    TempData["Success"] = "✅ Información detallada creada correctamente";
+                    // ========== MENSAJE DE ÉXITO ==========
+                    TempData["Success"] = "Información detallada guardada correctamente";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -139,15 +138,36 @@ namespace DLACCESS.Areas.Admin.Controllers
             }
 
             // Si hay errores, recargar listas
-            RecargarListas(vm);
+            CargarListas(vm);
             return View(vm);
         }
+
+        // Método auxiliar para cargar listas - USANDO TU ESTRUCTURA
+        private void CargarListas(InfoDetalladaVM vm)
+        {
+            vm.ListaPersonas = _contenedorTrabajo.Persona.GetListaPersonas();
+            vm.ListaCasas = _contenedorTrabajo.Casa.GetListaCasas();
+            vm.ListaEdificios = _contenedorTrabajo.Edificio.GetListaEdificios();
+            vm.ListaVehiculos = _contenedorTrabajo.Vehiculo.GetListaVehiculos();
+        }
+
+        // ==================== INDEX (para redirección) ====================
+        public IActionResult Index()
+        {
+            var lista = _contenedorTrabajo.InfoDetallada.GetAll(
+                includeProperties: "Persona,Casa,Edificio,Vehiculo"
+            );
+            return View(lista);
+        }
+
+
+
 
         /*****************************************************************************************************************/
 
 
         #region LLamadas a la API
-        // ==================== API PARA MODAL (AJAX) ====================
+        // ==================== API PARA MODAL PERSONA (AJAX) ====================
         [HttpGet]
         public IActionResult GetPersonaById(int id)
         {
@@ -221,18 +241,13 @@ namespace DLACCESS.Areas.Admin.Controllers
             return Json(resultado);
         }
 
-
-
         #endregion
-
-
-
 
         /*****************************************************************************************************************/
 
 
         #region LLamadas a la API
-        // ==================== API PARA MODAL (AJAX) ====================
+        // ==================== API PARA MODAL CASA (AJAX) ====================
         [HttpGet]
         public IActionResult GetCasaById(int id)
         {
@@ -295,14 +310,148 @@ namespace DLACCESS.Areas.Admin.Controllers
             return Json(resultado);
         }
 
-
-
         #endregion
 
+        /****************************************************************************************************************************************************/
+
+
+        #region LLamadas a la API
+        // ==================== API PARA MODAL EDIFICIO (AJAX) ====================
+        [HttpGet]
+        public IActionResult GetEdificioById(int id)
+        {
+            var edificio = _contenedorTrabajo.Edificio.GetFirstOrDefault(
+                filter: e => e.Id == id,
+                includeProperties: "Piso,Departamento,Etapa"
+            );
+
+            if (edificio == null)
+                return NotFound(new { message = "Edificio no encontrado" });
+
+            return Json(new
+            {
+                id = edificio.Id,
+                NombreEdificio = edificio.NombreEdificio,
+                NombreFamilia = edificio.NombreFamilia,
+                Piso = edificio.Piso?.NombrePiso ?? "N/A",
+                Departamento = edificio.Departamento?.NombreDepart ?? "N/A",
+                Etapa = edificio.Etapa?.NombreEtapa ?? "N/A"
+            });
+        }
+        #endregion
+
+
+        #region LLamadas a la API
+        [HttpGet]
+        public IActionResult BuscarEdificio(string criterio)
+        {
+            var palabras = criterio?.ToLower()
+                                   .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                   ?? Array.Empty<string>();
+
+            var edificios = _contenedorTrabajo.Edificio.GetAll(
+                includeProperties: "Piso,Departamento,Etapa"
+            );
+
+            var filtrados = edificios.Where(e =>
+                palabras.All(p =>
+                    (e.NombreEdificio != null && e.NombreEdificio.ToLower().Contains(p)) ||
+                    (e.NombreFamilia != null && e.NombreFamilia.ToLower().Contains(p)) ||
+                    (e.Piso != null && e.Piso.NombrePiso.ToLower().Contains(p)) ||
+                    (e.Departamento != null && e.Departamento.NombreDepart.ToLower().Contains(p)) ||
+                    (e.Etapa != null && e.Etapa.NombreEtapa.ToLower().Contains(p))
+                )
+            );
+
+            var resultado = filtrados
+                .Take(20)
+                .Select(e => new {
+                    id = e.Id,
+                    NombreEdificio = e.NombreEdificio,
+                    NombreFamilia = e.NombreFamilia,
+                    Piso = e.Piso?.NombrePiso,
+                    Departamento = e.Departamento?.NombreDepart,
+                    Etapa = e.Etapa?.NombreEtapa
+                })
+                .ToList();
+
+            return Json(resultado);
+        }
+        #endregion
 
 
         /****************************************************************************************************************************************************/
 
+        /****************************************************************************************************************************************************/
+
+        #region LLamadas a la API
+        // ==================== API PARA MODAL VEHÍCULO (AJAX) ====================
+        [HttpGet]
+        public IActionResult GetVehiculoById(int id)
+        {
+            var vehiculo = _contenedorTrabajo.Vehiculo.GetFirstOrDefault(
+                filter: v => v.Id == id,
+                includeProperties: "Marca,Modelo,TipoVehiculo"
+            );
+
+            if (vehiculo == null)
+                return NotFound(new { message = "Vehículo no encontrado" });
+
+            return Json(new
+            {
+                id = vehiculo.Id,
+                Placa = vehiculo.NombreVehiculo, // este es tu campo de placa/nombre
+                Marca = vehiculo.Marca?.NombreMarca ?? "N/A",
+                Modelo = vehiculo.Modelo?.NombreModelo ?? "N/A",
+                Color = vehiculo.Color ?? "N/A",
+                Tipo = vehiculo.TipoVehiculo?.NombreTipoVehiculo ?? "N/A"
+            });
+        }
+        #endregion
+
+        #region LLamadas a la API
+        [HttpGet]
+        public IActionResult BuscarVehiculo(string criterio)
+        {
+            var palabras = criterio?.ToLower()
+                                   .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                   ?? Array.Empty<string>();
+
+            var vehiculos = _contenedorTrabajo.Vehiculo.GetAll(
+                includeProperties: "Marca,Modelo,TipoVehiculo"
+            );
+
+            var filtrados = vehiculos.Where(v =>
+                palabras.All(p =>
+                    (v.NombreVehiculo != null && v.NombreVehiculo.ToLower().Contains(p)) ||
+                    (v.Color != null && v.Color.ToLower().Contains(p)) ||
+                    (v.Marca != null && v.Marca.NombreMarca.ToLower().Contains(p)) ||
+                    (v.Modelo != null && v.Modelo.NombreModelo.ToLower().Contains(p)) ||
+                    (v.TipoVehiculo != null && v.TipoVehiculo.NombreTipoVehiculo.ToLower().Contains(p))
+                )
+            );
+
+            var resultado = filtrados
+                .Take(20)
+                .Select(v => new {
+                    id = v.Id,
+                    Placa = v.NombreVehiculo,
+                    Marca = v.Marca?.NombreMarca,
+                    Modelo = v.Modelo?.NombreModelo,
+                    Color = v.Color,
+                    Tipo = v.TipoVehiculo?.NombreTipoVehiculo
+                })
+                .ToList();
+
+            return Json(resultado);
+        }
+        #endregion
+
+        /****************************************************************************************************************************************************/
+
+
+
+        /****************************************************************************************************************************************************/
         #region LLamadas a la API
 
         public IActionResult GetAll()

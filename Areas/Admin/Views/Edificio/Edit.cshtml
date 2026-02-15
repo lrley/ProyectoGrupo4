@@ -102,6 +102,17 @@
                         <span asp-validation-for="Edificio.PisoId" class="text-danger"></span>
                     </div>
 
+                    <!-- Etapa -->
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Edificio.EtapaId" class="form-label fw-bold">Etapa</label>
+                        @Html.DropDownListFor(
+                                                m => m.Edificio.EtapaId,
+                                                Model.ListaEtapa,
+                                                "-Seleccione la Etapa-",
+                                                new { @class = "form-select border-dark" })
+                        <span asp-validation-for="Edificio.EtapaId" class="text-danger"></span>
+                    </div>
+
             
                 </div>
 

@@ -95,6 +95,7 @@ namespace DLACCESS.Areas.Admin.Controllers
                 ListaPisos = _contenedorTrabajo.Piso.GetListaPisos(),
                 ListaEtapa = _contenedorTrabajo.Etapa.GetListaEtapas(),
             };
+            
 
             return View(vm);
         }
@@ -129,6 +130,9 @@ namespace DLACCESS.Areas.Admin.Controllers
 
             EdificioFromDb.UpdatedAt = DateTime.Now;
             EdificioFromDb.Estado = vm.Edificio.Estado;
+
+            Console.WriteLine($"EtapaId recibido: {vm.Edificio.EtapaId}");
+
 
             _contenedorTrabajo.Edificio.Update(EdificioFromDb);
             _contenedorTrabajo.Save();
