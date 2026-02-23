@@ -1,0 +1,999 @@
+﻿@model DlaccessCore.Models.ViewModels.InfoDetalladaVM
+
+@{
+    ViewData["Title"] = "Editar Información Detallada";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div id="alertaError"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+        <strong>⚠ Atención:</strong><br />
+        @Html.Raw(TempData["Error"])
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+    </div>
+
+    <script>
+        var tiempoAlerta = 5000;
+        setTimeout(function () {
+            var alerta = document.getElementById("alertaError");
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function () {
+                    alerta.remove();
+                }, 500);
+            }
+        }, tiempoAlerta);
+    </script>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div id="alertaSuccess"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+        <strong>✅ Éxito:</strong><br />
+        @Html.Raw(TempData["Success"])
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var alerta = document.getElementById("alertaSuccess");
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function () {
+                    alerta.remove();
+                }, 500);
+            }
+        }, 5000);
+    </script>
+}
+
+<style>
+    body {
+        background-color: #f4f6f9;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        border-radius: 10px;
+        padding: 0.5rem 1.5rem;
+    }
+
+    /* Select2 estilos */
+    .select2-container--bootstrap-5 .select2-selection {
+        min-height: 38px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection__rendered {
+        line-height: 36px;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+        border: none;
+    }
+
+    .modal-header {
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        height: 100%;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    /* Estilos para el preview mejorado */
+    .preview-card {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+        border-left: 4px solid #0d6efd;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .preview-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+        .preview-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .preview-icon {
+        width: 28px;
+        height: 28px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .preview-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 0.5rem;
+    }
+
+    .preview-value {
+        font-weight: 600;
+        color: #212529;
+    }
+
+        .preview-value.name {
+            color: #0d6efd;
+            font-size: 1.1rem;
+        }
+
+        .preview-value.cedula {
+            color: #198754;
+            font-family: monospace;
+        }
+
+        .preview-value.email {
+            color: #6c757d;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+</style>
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="m-0"><i class="bi bi-pencil-square"></i> Editar Información Detallada</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <form asp-action="Edit" method="post" id="formCreate" enctype="multipart/form-data">
+
+        <!-- CAMPO OCULTO CRÍTICO PARA EDIT -->
+        <input type="hidden" asp-for="InfoDetallada.Id" />
+        <input type="hidden" asp-for="InfoDetallada.FechaCreacion" />
+        <input type="hidden" asp-for="InfoDetallada.CreatedAt" />
+
+        <!-- ================= PERSONA ================= -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="m-0"><i class="bi bi-person-circle"></i> Selección de Persona</h5>
+                <span class="badge bg-white text-primary" id="badgePersona">
+                    @(Model.InfoDetallada.IdPersona > 0 ? "Seleccionado" : "Pendiente")
+                </span>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="row align-items">
+                    <div class="col-md-8">
+                        <label asp-for="InfoDetallada.IdPersona" class="form-label fw-bold">
+                            Buscar Persona <span class="text-danger">*</span>
+                        </label>
+                        <select id="personaSelect" name="InfoDetallada.IdPersona"
+                                class="form-select select2-persona" style="width: 100%;">
+                            <option value="">-- Escriba para buscar persona --</option>
+                            @if (Model.InfoDetallada.IdPersona > 0 && !string.IsNullOrEmpty(Model.NombrePersonaSeleccionada))
+                            {
+                                <option value="@Model.InfoDetallada.IdPersona" selected>@Model.NombrePersonaSeleccionada</option>
+                            }
+                        </select>
+                        <span asp-validation-for="InfoDetallada.IdPersona" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" id="btnVerPersona" class="btn btn-outline-primary w-100"
+                                @(Model.InfoDetallada.IdPersona > 0 ? "" : "disabled")>
+                            <i class="bi bi-eye"></i> Ver detalle persona
+                        </button>
+                        <button type="button" id="btnResetPersona" class="btn btn-outline-primary w-100 mt-2"
+                                @(Model.InfoDetallada.IdPersona > 0 ? "" : "disabled")>
+                            <i class="bi bi-x-circle-fill"></i> Reset detalle persona
+                        </button>
+                    </div>
+                </div>
+
+                <div id="previewPersona" class="mt-3 preview-card @(Model.InfoDetallada.IdPersona > 0 ? "" : "d-none")">
+                    <div id="previewContent">
+                        <!-- Se llena dinámicamente con JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= SELECCIÓN TIPO UBICACIÓN ================= -->
+        @{
+            bool esCasa = Model.InfoDetallada.CasaId != null && Model.InfoDetallada.CasaId > 0;
+            bool esEdificio = Model.InfoDetallada.IdEdificio != null && Model.InfoDetallada.IdEdificio > 0;
+            bool radioCasaChecked = esCasa || (!esCasa && !esEdificio);
+        }
+        <div class="card mb-3 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="m-0"><i class="bi bi-geo-alt-fill"></i>Su Vivienda es: Casa o Edificio</h5>
+            </div>
+            <div class="card-body p-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoUbicacion" id="radioCasa" value="casa"
+                           @(radioCasaChecked ? "checked" : "") onchange="toggleUbicacion()">
+                    <label class="form-check-label fw-bold" for="radioCasa">
+                        <i class="bi bi-house-door-fill"></i> Casa
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="tipoUbicacion" id="radioEdificio" value="edificio"
+                           @(esEdificio ? "checked" : "") onchange="toggleUbicacion()">
+                    <label class="form-check-label fw-bold" for="radioEdificio">
+                        <i class="bi bi-building"></i> Edificio
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CASA ================= -->
+        <div class="card mb-4 @(esEdificio ? "d-none" : "")" id="cardCasa">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="m-0"><i class="bi bi-house-door-fill"></i> Selección de Casa</h5>
+                <span class="badge bg-white text-primary" id="badgeCasa">
+                    @(Model.InfoDetallada.CasaId != null ? "Seleccionado" : "Pendiente")
+                </span>
+            </div>
+            <div class="card-body p-4" id="contenidoCasa">
+
+                <div class="row align-items">
+                    <div class="col-md-8">
+                        <label asp-for="InfoDetallada.CasaId" class="form-label fw-bold">
+                            Buscar Casa <span class="text-danger">*</span>
+                        </label>
+                        <select id="casaSelect" name="InfoDetallada.CasaId"
+                                class="form-select select2-casa" style="width: 100%;">
+                            <option value="">-- Escriba para buscar casa --</option>
+                            @if (Model.InfoDetallada.CasaId != null && !string.IsNullOrEmpty(Model.NombreCasaSeleccionada))
+                            {
+                                <option value="@Model.InfoDetallada.CasaId" selected>@Model.NombreCasaSeleccionada</option>
+                            }
+                        </select>
+                        <span asp-validation-for="InfoDetallada.CasaId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" id="btnVerCasa" class="btn btn-outline-primary w-100"
+                                @(Model.InfoDetallada.CasaId != null ? "" : "disabled")>
+                            <i class="bi bi-eye"></i> Ver detalle casa
+                        </button>
+                        <button type="button" id="btnResetCasa" class="btn btn-outline-primary w-100 mt-2"
+                                @(Model.InfoDetallada.CasaId != null ? "" : "disabled")>
+                            <i class="bi bi-x-circle-fill"></i> Reset detalle Casa
+                        </button>
+                    </div>
+                </div>
+
+                <div id="previewCasa" class="mt-3 preview-card @(Model.InfoDetallada.CasaId != null ? "" : "d-none")">
+                    <div id="previewCasaContent"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= EDIFICIO ================= -->
+        <div class="card mb-4 @(radioCasaChecked ? "d-none" : "")" id="cardEdificio">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="m-0"><i class="bi bi-building"></i> Selección de Edificio</h5>
+                <span class="badge bg-white text-primary" id="badgeEdificio">
+                    @(Model.InfoDetallada.IdEdificio != null ? "Seleccionado" : "Pendiente")
+                </span>
+            </div>
+            <div class="card-body p-4" id="contenidoEdificio">
+
+                <div class="row align-items">
+                    <div class="col-md-8">
+                        <label asp-for="InfoDetallada.IdEdificio" class="form-label fw-bold">
+                            Buscar Edificio <span class="text-danger">*</span>
+                        </label>
+                        <select id="edificioSelect" name="InfoDetallada.IdEdificio"
+                                class="form-select select2-edificio" style="width: 100%;">
+                            <option value="">-- Escriba para buscar edificio --</option>
+                            @if (Model.InfoDetallada.IdEdificio != null && !string.IsNullOrEmpty(Model.NombreEdificioSeleccionado))
+                            {
+                                <option value="@Model.InfoDetallada.IdEdificio" selected>@Model.NombreEdificioSeleccionado</option>
+                            }
+                        </select>
+                        <span asp-validation-for="InfoDetallada.IdEdificio" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" id="btnVerEdificio" class="btn btn-outline-primary w-100"
+                                @(Model.InfoDetallada.IdEdificio != null ? "" : "disabled")>
+                            <i class="bi bi-eye"></i> Ver detalle edificio
+                        </button>
+                        <button type="button" id="btnResetEdificio" class="btn btn-outline-primary w-100 mt-2"
+                                @(Model.InfoDetallada.IdEdificio != null ? "" : "disabled")>
+                            <i class="bi bi-x-circle-fill"></i> Reset detalle Edificio
+                        </button>
+                    </div>
+                </div>
+
+                <div id="previewEdificio" class="mt-3 preview-card @(Model.InfoDetallada.IdEdificio != null ? "" : "d-none")">
+                    <div id="previewEdificioContent"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= VEHÍCULO ================= -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="m-0"><i class="bi bi-car-front"></i> Selección de Vehículo</h5>
+                <span class="badge bg-white text-primary" id="badgeVehiculo">
+                    @(Model.InfoDetallada.IdVehiculo != null ? "Seleccionado" : "Pendiente")
+                </span>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="row align-items">
+                    <div class="col-md-8">
+                        <label asp-for="InfoDetallada.IdVehiculo" class="form-label fw-bold">
+                            Buscar Vehículo <span class="text-danger">*</span>
+                        </label>
+                        <select id="vehiculoSelect" name="InfoDetallada.IdVehiculo"
+                                class="form-select select2-vehiculo" style="width: 100%;">
+                            <option value="">-- Escriba para buscar vehículo --</option>
+                            @if (Model.InfoDetallada.IdVehiculo != null && !string.IsNullOrEmpty(Model.NombreVehiculoSeleccionado))
+                            {
+                                <option value="@Model.InfoDetallada.IdVehiculo" selected>@Model.NombreVehiculoSeleccionado</option>
+                            }
+                        </select>
+                        <span asp-validation-for="InfoDetallada.IdVehiculo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" id="btnVerVehiculo" class="btn btn-outline-primary w-100"
+                                @(Model.InfoDetallada.IdVehiculo != null ? "" : "disabled")>
+                            <i class="bi bi-eye"></i> Ver detalle vehículo
+                        </button>
+                        <button type="button" id="btnResetVehiculo" class="btn btn-outline-primary w-100 mt-2"
+                                @(Model.InfoDetallada.IdVehiculo != null ? "" : "disabled")>
+                            <i class="bi bi-x-circle-fill"></i> Reset detalle Vehiculo
+                        </button>
+                    </div>
+                </div>
+
+                <div id="previewVehiculo" class="mt-3 preview-card @(Model.InfoDetallada.IdVehiculo != null ? "" : "d-none")">
+                    <div id="previewVehiculoContent"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= DATOS ADICIONALES ================= -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="m-0"><i class="bi bi-card-list"></i> Datos de Acceso</h5>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="InfoDetallada.NumeroPlaca" id="NumeroPlaca" class="form-label fw-bold">Placa Vehicular</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-car-front"></i></span>
+                            <input asp-for="InfoDetallada.NumeroPlaca" class="form-control text-uppercase"
+                                   placeholder="ABC1234" maxlength="20" />
+                        </div>
+                        <span asp-validation-for="InfoDetallada.NumeroPlaca" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="InfoDetallada.NumeroTag" id="NumeroTag" class="form-label fw-bold">Número de Tag</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                            <input asp-for="InfoDetallada.NumeroTag" class="form-control"
+                                   placeholder="Solo números" maxlength="50" inputmode="numeric" />
+                        </div>
+                        <span asp-validation-for="InfoDetallada.NumeroTag" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="InfoDetallada.NumeroTarjeta" id="NumeroTarjeta" class="form-label fw-bold">Número de Tarjeta</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                            <input asp-for="InfoDetallada.NumeroTarjeta" class="form-control"
+                                   placeholder="Solo números" maxlength="50" inputmode="numeric" />
+                        </div>
+                        <span asp-validation-for="InfoDetallada.NumeroTarjeta" class="text-danger small"></span>
+                    </div>
+
+                    <!-- ✅ ESTADO DEL REGISTRO (BD) -->
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-6">
+                            <label asp-for="InfoDetallada.Estado" class="form-label fw-bold">
+                                <i class="bi bi-database"></i> Estado del Registro
+                            </label>
+                            <select asp-for="InfoDetallada.Estado" class="form-select" id="selectEstado" onchange="actualizarBadgeEstado()">
+                                <option value="true">✅ Activo</option>
+                                <option value="false">❌ Inactivo</option>
+                            </select>
+                            <span asp-validation-for="InfoDetallada.Estado" class="text-danger"></span>
+
+                            <!-- Badge dinámico Estado -->
+                            <div class="mt-2" id="badgeEstadoContainer">
+                                @if (Model.InfoDetallada.Estado)
+                                {
+                                    <span class="badge bg-success fs-6" id="badgeEstado">
+                                        <i class="bi bi-check-circle-fill"></i> Activo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary fs-6" id="badgeEstado">
+                                        <i class="bi bi-x-circle-fill"></i> Inactivo
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- ✅ PERMISO DE ACCESO -->
+                        <div class="col-md-6">
+                            <label asp-for="InfoDetallada.Permiso" class="form-label fw-bold">
+                                <i class="bi bi-shield-check"></i> Permiso de Acceso
+                            </label>
+                            <select asp-for="InfoDetallada.Permiso" class="form-select" id="selectPermiso" onchange="actualizarBadgePermiso()">
+                                <option value="true">✅ Permitido</option>
+                                <option value="false">❌ Denegado</option>
+                            </select>
+                            <span asp-validation-for="InfoDetallada.Permiso" class="text-danger"></span>
+
+                            <!-- Badge dinámico Permiso -->
+                            <div class="mt-2" id="badgePermisoContainer">
+                                @if (Model.InfoDetallada.Permiso)
+                                {
+                                    <span class="badge bg-primary fs-6" id="badgePermiso">
+                                        <i class="bi bi-shield-check"></i> Acceso Permitido
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger fs-6" id="badgePermiso">
+                                        <i class="bi bi-shield-x"></i> Acceso Denegado
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+
+            <!--************************************************************************FOTO**************************************************************************-->
+            <div class="col-md-12 mb-3">
+                <label class="form-label fw-bold">Seleccione método de imagen</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="opcionImagen" id="opcionArchivo" value="archivo" checked onchange="toggleImagen()">
+                    <label class="form-check-label" for="opcionArchivo">Subir desde archivo</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="opcionImagen" id="opcionCamara" value="camara" onchange="toggleImagen()">
+                    <label class="form-check-label" for="opcionCamara">Tomar con cámara</label>
+                </div>
+            </div>
+
+            <!-- Subir archivo (correcto) -->
+            <div id="divArchivo" class="mb-3">
+                <label class="form-label">Imagen</label>
+                <input asp-for="ArchivoImagen" type="file" class="form-control" onchange="previewArchivo(this)" />
+                <span asp-validation-for="ArchivoImagen" class="text-danger"></span>
+            </div>
+
+            <!-- Tomar foto -->
+            <div id="divCamara" class="mb-3" style="display:none;">
+                <label>Tomar Foto</label>
+                <video id="video" width="320" height="240" autoplay class="border mb-2" style="display:none;"></video>
+                <button type="button" class="btn btn-primary" onclick="iniciarCamara()">
+                    <i class="bi bi-camera-video"></i> Abrir Cámara
+                </button>
+                <button type="button" class="btn btn-success mt-2" onclick="tomarFoto()">
+                    <i class="bi bi-camera-fill"></i> Tomar Foto
+                </button>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <input type="hidden" asp-for="FotoBase64" />
+            </div>
+
+            <!-- Vista previa única -->
+          @*   <img id="previewImagen" src="" class="img-thumbnail mt-2" style="display:none; max-width:200px;" /> *@
+             <img id="previewImagen"
+                 src="@(string.IsNullOrEmpty(Model.InfoDetallada.ImgVehiculo)
+                             ? ""
+                                              : Url.Content(Model.InfoDetallada.ImgVehiculo))"
+                 class="img-thumbnail mt-2"
+                 style="@(string.IsNullOrEmpty(Model.InfoDetallada.ImgVehiculo)
+                             ? "display:none;"
+                             : "display:block;") max-width:200px;" />
+
+
+            <!--************************************************************************FIN DE FOTO**************************************************************************-->
+
+
+        </div>
+
+        <!-- ================= BOTONES ================= -->
+        <div class="d-flex justify-content-end gap-3 mb-5">
+            <a asp-action="Index" class="btn btn-secondary btn-lg">Cancelar</a>
+            <button type="button" id="btnGuardarInfo" class="btn btn-warning btn-lg">
+                <i class="bi bi-check-lg"></i> Actualizar Información
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- ================= MODAL PERSONA ================= -->
+<div class="modal fade" id="modalPersona" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-person-badge"></i> Detalle de Persona</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3" id="datosPersona">
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Nombre Completo</div>
+                            <div class="info-value text-primary" id="mpNombre">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Cédula</div>
+                            <div class="info-value" id="mpCedula">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Teléfono</div>
+                            <div class="info-value" id="mpTelefono">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="mpEmail">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Rol</div>
+                            <div class="info-value"><span class="badge bg-info text-dark fs-6" id="mpRol">-</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <div class="info-label">Tipo</div>
+                            <div class="info-value"><span class="badge bg-secondary fs-6" id="mpTipo">-</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="loadingPersona" class="text-center py-5 d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando información...</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL CASA ================= -->
+<div class="modal fade" id="modalCasa" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-house-door-fill"></i> Detalle de Casa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3" id="datosCasa">
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Familia</div>
+                            <div class="info-value text-success" id="mcNombreFamilia">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Manzana</div>
+                            <div class="info-value" id="mcManzana">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Villa</div>
+                            <div class="info-value" id="mcVilla">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Etapa</div>
+                            <div class="info-value" id="mcEtapa">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Urbanizacion</div>
+                            <div class="info-value" id="Urbanizacion">-</div>
+                        </div>
+                    </div>
+             
+
+              
+
+                </div>
+                <div id="loadingCasa" class="text-center py-5 d-none">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando información de la casa...</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL EDIFICIO ================= -->
+<div class="modal fade" id="modalEdificio" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="bi bi-building"></i> Detalle de Edificio</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3" id="datosEdificio">
+                  
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Familiaaa</div>
+                            <div class="info-value" id="meNombreFamilia">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Piso</div>
+                            <div class="info-value" id="mePiso">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Departamento</div>
+                            <div class="info-value" id="meDepartamento">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Etapa</div>
+                            <div class="info-value" id="meEtapa">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Urbanizacion</div>
+                            <div class="info-value" id="meUrbanizacion">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="loadingEdificio" class="text-center py-5 d-none">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando información del edificio...</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL VEHÍCULO ================= -->
+<div class="modal fade" id="modalVehiculo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="bi bi-car-front"></i> Detalle de Vehículo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3" id="datosVehiculo">
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Año</div>
+                            <div class="info-value text-info" id="mvAnio">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Marca</div>
+                            <div class="info-value" id="mvMarca">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Modelo</div>
+                            <div class="info-value" id="mvModelo">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Color</div>
+                            <div class="info-value" id="mvColor">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Tipo de Vehiculo</div>
+                            <div class="info-value" id="mvTipo">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="loadingVehiculo" class="text-center py-5 d-none">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando información del vehículo...</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- ================= MODAL CONFIRMAR GUARDAR ================= -->
+<div class="modal fade" id="modalConfirmarGuardar" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> Confirmar Actualización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="bi bi-question-circle-fill text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <h5>¿Está seguro de actualizar esta información?</h5>
+                <p class="text-muted mb-0">Por favor revise que todos los datos sean correctos antes de continuar.</p>
+                <div class="alert alert-info mt-3 text-start">
+                    <small><i class="bi bi-info-circle"></i> <strong>Resumen de selección:</strong></small>
+                    <ul class="mb-0 mt-1 small" style="list-style: none; padding-left: 0;">
+                        <li id="resumenPersona">👤 Persona: <span class="text-danger">No seleccionada</span></li>
+                        <li id="resumenUbicacion">🏠 Ubicación: <span class="text-danger">No seleccionada</span></li>
+                        <li id="resumenVehiculo">🚗 Vehículo: <span class="text-muted">No seleccionado</span></li>
+                        <li id="resumenPlaca">🔢 Placa: <span class="text-muted">-</span></li>
+                        <li id="resumenTag">🏷️ Tag: <span class="text-muted">-</span></li>
+                        <li id="resumenTarjeta">💳 Tarjeta: <span class="text-muted">-</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center gap-2">
+                <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> No, revisar datos
+                </button>
+                <button type="button" class="btn btn-warning btn-lg" id="btnSiGuardar">
+                    <i class="bi bi-check-lg"></i> Sí, actualizar información
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Select2 Bootstrap 5 Theme -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css " rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css " rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js "></script>
+
+  @*   <script>
+        $(function () {
+            $('.selectpicker').selectpicker();
+        });
+    </script> *@
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const fotoBase64 = document.querySelector('input[name="FotoBase64"]');
+            const previewImagen = document.getElementById('previewImagen');
+            const fileInput = document.querySelector('input[type="file"]');
+
+            let streamActivo = null;
+
+            // 🔥 Guardamos la imagen original al cargar EDIT
+            let imagenOriginal = previewImagen && previewImagen.src ? previewImagen.src : "";
+
+            // ===============================
+            // CAMBIAR MÉTODO (ARCHIVO / CÁMARA)
+            // ===============================
+            window.toggleImagen = function () {
+
+                const opcion = document.querySelector('input[name="opcionImagen"]:checked').value;
+
+                if (opcion === 'archivo') {
+                    document.getElementById('divArchivo').style.display = 'block';
+                    document.getElementById('divCamara').style.display = 'none';
+                    detenerCamara();
+                } else {
+                    document.getElementById('divArchivo').style.display = 'none';
+                    document.getElementById('divCamara').style.display = 'block';
+                }
+            };
+
+            // ===============================
+            // INICIAR CÁMARA
+            // ===============================
+            window.iniciarCamara = function () {
+
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        streamActivo = stream;
+                        video.srcObject = stream;
+                        video.style.display = "block";
+                    })
+                    .catch(err => {
+                        alert("No se pudo acceder a la cámara: " + err);
+                    });
+            };
+
+            // ===============================
+            // TOMAR FOTO
+            // ===============================
+            window.tomarFoto = function () {
+
+                if (!streamActivo) {
+                    alert("Primero abre la cámara.");
+                    return;
+                }
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+
+                const dataUrl = canvas.toDataURL('image/jpeg');
+
+                fotoBase64.value = dataUrl;
+
+                previewImagen.src = dataUrl;
+                previewImagen.style.display = "block";
+
+                // 🔥 Actualizamos respaldo
+                imagenOriginal = dataUrl;
+
+                detenerCamara();
+            };
+
+            // ===============================
+            // PREVIEW ARCHIVO
+            // ===============================
+            window.previewArchivo = function (input) {
+
+                const file = input.files[0];
+
+                if (file) {
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+
+                        previewImagen.src = e.target.result;
+                        previewImagen.style.display = "block";
+
+                        fotoBase64.value = "";
+
+                        // 🔥 Actualizamos respaldo
+                        imagenOriginal = e.target.result;
+                    };
+
+                    reader.readAsDataURL(file);
+
+                } else {
+                    // 🔥 Si el usuario cancela, volver a imagen original
+                    previewImagen.src = imagenOriginal;
+                    previewImagen.style.display = imagenOriginal ? "block" : "none";
+                }
+            };
+
+            // ===============================
+            // DETENER CÁMARA
+            // ===============================
+            function detenerCamara() {
+
+                if (streamActivo) {
+                    streamActivo.getTracks().forEach(track => track.stop());
+                    streamActivo = null;
+                }
+
+                video.srcObject = null;
+                video.style.display = "none";
+            }
+
+        });
+    </script>
+
+
+
+
+    <!-- JS específico para Edit (carga automáticamente los previews) -->
+    <script src="~/js/InfoDetallada/InfoDetalladaEdit.js"></script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

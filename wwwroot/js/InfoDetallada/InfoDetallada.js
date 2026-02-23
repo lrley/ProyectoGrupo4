@@ -33,7 +33,14 @@ $(document).ready(function () {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            text: item.nombre + ' ' + item.apellido + ' (' + item.cedula + ')'
+                            text:
+                                'Nombres: '+item.nombre + ' ' + item.apellido +
+                                ' | CI: ' + (item.cedula ?? '-') +
+                                ' | Email: ' + (item.email ?? '-') +
+                                ' | Teléfono: ' + (item.telefono ?? '-')+
+                                ' | Tipo de Propietario: ' + (item.tipopersona ?? '-')+
+                                ' | Genero: ' + (item.sexoNombre ?? '-')
+
                         };
                     })
                 };
@@ -41,7 +48,9 @@ $(document).ready(function () {
             camposPreview: [
                 { label: 'Nombre', campo: 'nombre', icono: 'bi-person-fill', template: (d) => `${d.nombre || ''} ${d.apellido || ''}` },
                 { label: 'Cédula', campo: 'cedula', icono: 'bi-card-text' },
-                { label: 'Email', campo: 'email', icono: 'bi-envelope-fill' }
+                { label: 'Email', campo: 'email', icono: 'bi-envelope-fill' },
+                { label: 'Teléfono', campo: 'telefono', icono: 'bi-envelope-fill' }
+
             ],
             camposModal: [
                 { id: 'mpNombre', template: (d) => `${d.nombre || ''} ${d.apellido || ''}` },
@@ -86,7 +95,11 @@ $(document).ready(function () {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            text: item.nombreFamilia + ' - Mz: ' + item.manzana + ' - Villa: ' + item.villa + ' - Etapa: ' + item.etapa
+                            text: 'Vivienda o Familia: ' + item.nombreFamilia +
+                                ' / Manzana: ' + item.manzana +
+                                ' / Villa: ' + item.villa +
+                                ' / Etapa: ' + item.etapa +
+                                '/ Urbanizacion: ' + item.urbanizacion
                         };
                     })
                 };
@@ -95,19 +108,22 @@ $(document).ready(function () {
                 { label: 'Familia', campo: 'NombreFamilia', icono: 'bi-house-door-fill' },
                 { label: 'Manzana', campo: 'Manzana', icono: 'bi-grid-3x3-gap-fill' },
                 { label: 'Villa', campo: 'Villa', icono: 'bi-door-open-fill' },
-                { label: 'Etapa', campo: 'Etapa', icono: 'bi-diagram-3-fill' }
+                { label: 'Etapa', campo: 'Etapa', icono: 'bi-diagram-3-fill' },
+                { label: 'Urbanizacion', campo: 'Urbanizacion', icono: 'bi-diagram-3-fill' }
             ],
             camposModal: [
                 { id: 'mcNombreFamilia', campo: 'NombreFamilia' },
                 { id: 'mcManzana', campo: 'Manzana' },
                 { id: 'mcVilla', campo: 'Villa' },
-                { id: 'mcEtapa', campo: 'Etapa' }
+                { id: 'mcEtapa', campo: 'Etapa' },
+                { id: 'Urbanizacion', campo: 'Urbanizacion' }
             ],
             camposResumen: [
                 { label: 'Familia', campo: 'NombreFamilia' },
                 { label: 'Manzana', campo: 'Manzana' },
                 { label: 'Villa', campo: 'Villa' },
-                { label: 'Etapa', campo: 'Etapa' }
+                { label: 'Etapa', campo: 'Etapa' },
+                { label: 'Urbanizacion', campo: 'Urbanizacion' }
             ],
             iconoPreview: 'bi-house',
             iconoPreviewDetalle: 'bi-house-door-fill',
@@ -136,40 +152,43 @@ $(document).ready(function () {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            text: (item.NombreEdificio || '-') +
-                                ' - Familia: ' + (item.NombreFamilia || '-') +
+                            text: 
+                                'Familia o Vivienda: ' + (item.NombreFamilia || '-') +
                                 ' - Piso: ' + (item.Piso || '-') +
                                 ' - Departamento: ' + (item.Departamento || '-') +
-                                ' - Etapa: ' + (item.Etapa || '-')
+                                ' - Etapa: ' + (item.Etapa || '-')+
+                                ' - Urbanizacion: ' + (item.Urbanizacion || '-')
                         };
                     })
                 };
             },
             camposPreview: [
-                { label: 'Edificio', campo: 'NombreEdificio', icono: 'bi-building' },
-                { label: 'Familia', campo: 'NombreFamilia', icono: 'bi-people-fill' },
+                { label: 'Familia o Vivienda', campo: 'NombreFamilia', icono: 'bi-people-fill' },
                 { label: 'Piso', campo: 'Piso', icono: 'bi-layers' },
                 { label: 'Departamento', campo: 'Departamento', icono: 'bi-door-open' },
-                { label: 'Etapa', campo: 'Etapa', icono: 'bi-diagram-3' }
+                { label: 'Etapa', campo: 'Etapa', icono: 'bi-diagram-3' },
+                { label: 'Urbanizacion', campo: 'Urbanizacion', icono: 'bi-diagram-3' }
             ],
             camposModal: [
-                { id: 'mcNombreEdificio', campo: 'NombreEdificio' },
                 { id: 'NombreFamilia', campo: 'NombreFamilia' },
                 { id: 'mcPiso', campo: 'Piso' },
                 { id: 'mcDepartamento', campo: 'Departamento' },
-                { id: 'Etapa', campo: 'Etapa' }
+                { id: 'Etapa', campo: 'Etapa' },
+                { id: 'Urbanizacion', campo: 'Urbanizacion' }
             ],
             camposResumen: [
                 { label: 'Edificio', campo: 'NombreEdificio' },
                 { label: 'Familia', campo: 'NombreFamilia' },
                 { label: 'Piso', campo: 'Piso' },
                 { label: 'Departamento', campo: 'Departamento' },
-                { label: 'Etapa', campo: 'Etapa' }
+                { label: 'Etapa', campo: 'Etapa' },
+                { label: 'Urbanizacion', campo: 'Urbanizacion' }
             ],
             iconoPreview: 'bi-building',
             iconoPreviewDetalle: 'bi-building',
             iconoResumen: 'bi-building'
         },
+
         {
             tipo: 'vehiculo',
             nombre: 'Vehículo',
@@ -188,36 +207,43 @@ $(document).ready(function () {
             mensajeNoResultados: 'No se encontraron vehículos',
             mensajeSeleccionar: 'Seleccione un vehículo primero',
             usaCache: false,
+
             processResults: function (data) {
                 return {
                     results: $.map(data, function (item) {
                         return {
                             id: item.id,
-                            text: (item.Placa || '-') +
-                                ' - Marca: ' + (item.Marca || '-') +
-                                ' - Modelo: ' + (item.Modelo || '-') +
-                                ' - Color: ' + (item.Color || '-')
+                            text: "Año: " + item.anio + " / " +
+                                "Marca: " + item.marca + " / " +
+                                "Modelo: " + item.modelo + " / (" +
+                                "Color: " + item.color + ")" +
+                                "Tipo de Vehiculo: " + item.tipo + ")"
+
                         };
                     })
                 };
             },
+
             camposPreview: [
-                { label: 'Año del Vehiculo', campo: 'Placa', icono: 'bi-car-front' },
-                { label: 'Marca', campo: 'Marca', icono: 'bi-tag' },
-                { label: 'Modelo', campo: 'Modelo', icono: 'bi-car-front-fill' },
-                { label: 'Color', campo: 'Color', icono: 'bi-palette' }
+                { label: 'Año: ', campo: 'anio', icono: 'bi-car-front' },
+                { label: 'Marca: ', campo: 'Marca', icono: 'bi-tag' },
+                { label: 'Modelo: ', campo: 'Modelo', icono: 'bi-car-front-fill' },
+                { label: 'Color: ', campo: 'Color', icono: 'bi-palette' },
+                { label: 'Tipo de Vehiculo: ', campo: 'Tipo', icono: 'bi-palette' }
             ],
             camposModal: [
-                { id: 'mvPlaca', campo: 'Placa' },
+                { id: 'mvPlaca', campo: 'anio' },
                 { id: 'mvMarca', campo: 'Marca' },
                 { id: 'mvModelo', campo: 'Modelo' },
-                { id: 'mvColor', campo: 'Color' }
+                { id: 'mvColor', campo: 'Color' },
+                { id: 'mvTipo', campo: 'Tipo' }
             ],
             camposResumen: [
-                { label: 'Año del Vehiculo', campo: 'Placa' },
+                { label: 'Año del Vehiculo', campo: 'anio' },
                 { label: 'Marca', campo: 'Marca' },
                 { label: 'Modelo', campo: 'Modelo' },
-                { label: 'Color', campo: 'Color' }
+                { label: 'Color', campo: 'Color' },
+                { label: 'Tipo de Vehiculo', campo: 'Tipo' }
             ],
             iconoPreview: 'bi-car-front',
             iconoPreviewDetalle: 'bi-car-front',
@@ -238,75 +264,17 @@ $(document).ready(function () {
     $('input[name="InfoDetallada.NumeroTag"], input[name="InfoDetallada.NumeroTarjeta"]').on('input', function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
+
+    toggleUbicacion();
 });
 
 
-/**
- * Configura el botón de "Agregar Datos" para que abra el modal de resumen
- */
-//function configurarBotonGuardar() {
-//    var $btnGuardar = $('#btnAgregarDatos');
-
-//    // Si no existe, buscar el botón de submit original y reemplazarlo
-//    if ($btnGuardar.length === 0) {
-//        var $btnOriginal = $('form button[type="submit"]').first();
-//        if ($btnOriginal.length > 0) {
-//            $btnOriginal.attr('type', 'button');
-//            $btnOriginal.attr('id', 'btnAgregarDatos');
-//            $btnOriginal.html('<i class="bi bi-clipboard-check me-2"></i>Agregar Datos');
-//            $btnOriginal.removeClass('btn-primary').addClass('btn-info');
-//            $btnGuardar = $btnOriginal;
-//        }
-//    }
-
-//    if ($btnGuardar.length > 0) {
-//        $btnGuardar.off('click').on('click', function (e) {
-//            e.preventDefault();
-//            mostrarResumenFinal();
-//        });
-//    }
-//}
 
 function configurarBotonGuardar() {
     // El botón de guardar ahora está manejado directamente en la vista (HTML)
     // No hacemos nada aquí para evitar conflictos
     console.log('configurarBotonGuardar: El botón se maneja desde el HTML');
 }
-
-/**
- * 
- * 
- * Configura el botón de "Guardar Información" existente para que abra el modal de resumen
- * en lugar de hacer submit directo
- */
-/*function configurarBotonGuardar() {
-    // Buscar el botón de guardar por texto (puede variar según tu HTML)
-    // Opción 1: Por texto exacto
-    let $btnGuardar = $('button:contains("Guardar Información"), button:contains("Guardar"), input[value="Guardar Información"], input[value="Guardar"]');
-
-    // Opción 2: Por clase común de botones de submit
-    if ($btnGuardar.length === 0) {
-        $btnGuardar = $('form button[type="submit"], form input[type="submit"]').last();
-    }
-
-    if ($btnGuardar.length > 0) {
-        // Guardar referencia al botón original para usarlo después
-        $btnGuardar.data('original-type', 'submit');
-
-        // Cambiar texto y apariencia
-        $btnGuardar.html('<i class="bi bi-clipboard-check me-2"></i>Agregar Datos');
-        $btnGuardar.removeClass('btn-primary').addClass('btn-info');
-
-        // Cambiar comportamiento: abrir modal en lugar de submit
-        $btnGuardar.on('click', function (e) {
-            e.preventDefault(); // Evitar submit directo
-            mostrarResumenFinal();
-        });
-    } else {
-        console.warn('No se encontró el botón de Guardar. Asegúrate de tener un botón con texto "Guardar Información" o "Guardar".');
-    }
-}*/
-
 
 /**
  * Obtiene los valores de los campos adicionales del formulario (Placa, Tag, Tarjeta)
@@ -349,134 +317,6 @@ function mostrarResumenFinal() {
         console.warn('modalConfirmarGuardar no encontrado');
     }
 }
-//function mostrarResumenFinal() {
-//    const seleccionados = [];
-
-//    Object.keys(entidades).forEach(tipo => {
-//        if (entidades[tipo].seleccionada) {
-//            seleccionados.push({
-//                tipo: tipo,
-//                config: entidades[tipo].config,
-//                datos: entidades[tipo].seleccionada
-//            });
-//        }
-//    });
-
-//    const camposAdicionales = obtenerCamposAdicionales();
-
-//    if (seleccionados.length === 0 && !camposAdicionales) {
-//        alert('⚠️ No ha seleccionado ninguna entidad ni ingresado datos adicionales.');
-//        return;
-//    }
-
-//    let contenidoHTML = '';
-
-//    if (seleccionados.length > 0) {
-//        seleccionados.forEach((item) => {
-//            const config = item.config;
-//            const datos = item.datos;
-
-//            contenidoHTML += `
-//                <div class="card mb-3 border-primary shadow-sm">
-//                    <div class="card-header bg-primary text-white d-flex align-items-center">
-//                        <i class="bi ${config.iconoResumen} me-2 fs-5"></i>
-//                        <h5 class="mb-0">${config.nombre}</h5>
-//                        <span class="badge bg-light text-primary ms-auto">Seleccionado</span>
-//                    </div>
-//                    <div class="card-body">
-//                        <div class="row">
-//                            ${config.camposResumen.map(campo => {
-//                const valor = campo.template ? campo.template(datos) : (datos[campo.campo] || '-');
-//                return `<div class="col-md-6 mb-2">
-//                            <small class="text-muted d-block">${campo.label}</small>
-//                            <span class="fw-bold text-dark">${valor}</span>
-//                        </div>`;
-//            }).join('')}
-//                        </div>
-//                    </div>
-//                </div>
-//            `;
-//        });
-//    }
-
-//    if (camposAdicionales) {
-//        contenidoHTML += `
-//            <div class="card mb-3 border-warning shadow-sm">
-//                <div class="card-header bg-warning text-dark d-flex align-items-center">
-//                    <i class="bi bi-input-cursor-text me-2 fs-5"></i>
-//                    <h5 class="mb-0">Información Adicional</h5>
-//                </div>
-//                <div class="card-body">
-//                    <div class="row">
-//                        ${camposAdicionales.placa ? `
-//                            <div class="col-md-4 mb-2">
-//                                <small class="text-muted d-block">Placa</small>
-//                                <span class="fw-bold text-dark">${camposAdicionales.placa}</span>
-//                            </div>` : ''}
-//                        ${camposAdicionales.numeroTag ? `
-//                            <div class="col-md-4 mb-2">
-//                                <small class="text-muted d-block">Número de Tag</small>
-//                                <span class="fw-bold text-dark">${camposAdicionales.numeroTag}</span>
-//                            </div>` : ''}
-//                        ${camposAdicionales.numeroTarjeta ? `
-//                            <div class="col-md-4 mb-2">
-//                                <small class="text-muted d-block">Número de Tarjeta</small>
-//                                <span class="fw-bold text-dark">${camposAdicionales.numeroTarjeta}</span>
-//                            </div>` : ''}
-//                    </div>
-//                </div>
-//            </div>
-//        `;
-//    }
-
-//    // Crear modal si no existe
-//    if ($('#modalResumenFinal').length === 0) {
-//        const modalHTML = `
-//            <div class="modal fade" id="modalResumenFinal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-//                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-//                    <div class="modal-content">
-//                        <div class="modal-header bg-info text-white">
-//                            <h5 class="modal-title">
-//                                <i class="bi bi-clipboard-check me-2"></i>
-//                                ¿Está seguro de guardar?
-//                            </h5>
-//                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-//                        </div>
-//                        <div class="modal-body bg-light" id="contenidoResumenFinal"></div>
-//                        <div class="modal-footer bg-white border-top">
-//                            <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
-//                                <i class="bi bi-arrow-left-circle me-1"></i>
-//                                No, revisar datos
-//                            </button>
-//                            <button type="button" class="btn btn-success btn-lg" id="btnConfirmarGuardarFinal">
-//                                <i class="bi bi-check-circle me-1"></i>
-//                                Sí, guardar información
-//                            </button>
-//                        </div>
-//                    </div>
-//                </div>
-//            </div>
-//        `;
-//        $('body').append(modalHTML);
-
-//        // Evento para confirmar guardado - IMPORTANTE: type="button" no submit
-//        $(document).off('click', '#btnConfirmarGuardarFinal').on('click', '#btnConfirmarGuardarFinal', function () {
-//            $('#modalResumenFinal').modal('hide');
-
-//            setTimeout(function () {
-//                var form = document.getElementById('formCreate');
-//                if (form) {
-//                    form.submit();
-//                } else {
-//                    $('form').first().submit();
-//                }
-//            }, 300);
-//        });
-//    }
-
-//    $('#contenidoResumenFinal').html(contenidoHTML);
-//    $('#modalResumenFinal').modal('show');
-//}
 
 
 /**
@@ -743,3 +583,44 @@ function mostrarPreviewVehiculo(data) { mostrarPreview(data, entidades.vehiculo.
 function verVehiculo() { abrirModal(entidades.vehiculo.config); }
 function resetModalVehiculo() { resetModal(entidades.vehiculo.config); }
 function mostrarDatosVehiculo(data) { mostrarDatosModal(data, entidades.vehiculo.config); }
+
+// =============================
+// TOGGLE ENTRE CASA Y EDIFICIO
+// =============================
+function toggleUbicacion() {
+
+    const radioCasa = document.getElementById("radioCasa");
+    const radioEdificio = document.getElementById("radioEdificio");
+
+    const cardCasa = document.getElementById("cardCasa");
+    const cardEdificio = document.getElementById("cardEdificio");
+
+    if (!radioCasa || !radioEdificio) return;
+
+    if (radioCasa.checked) {
+
+        // Mostrar Casa
+        cardCasa.classList.remove("d-none");
+        cardEdificio.classList.add("d-none");
+
+        // Limpiar selección edificio
+        if ($('#edificioSelect').length) {
+            $('#edificioSelect').val(null).trigger('change');
+        }
+
+    } else if (radioEdificio.checked) {
+
+        // Mostrar Edificio
+        cardEdificio.classList.remove("d-none");
+        cardCasa.classList.add("d-none");
+
+        // Limpiar selección casa
+        if ($('#casaSelect').length) {
+            $('#casaSelect').val(null).trigger('change');
+        }
+    }
+}
+
+
+
+/*******************fin******************** */

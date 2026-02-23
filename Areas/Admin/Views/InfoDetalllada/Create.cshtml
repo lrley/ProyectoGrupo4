@@ -4,6 +4,36 @@
     ViewData["Title"] = "Crear Información Detallada";
 }
 
+@if (TempData["Error"] != null)
+{
+    <div id="alertaError"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+        <strong>⚠ Atención:</strong><br />
+        @Html.Raw(TempData["Error"])
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+    </div>
+
+    <script>
+        var tiempoAlerta = 5000; // ⏱ Cambia aquí el tiempo (milisegundos)
+
+        setTimeout(function () {
+            var alerta = document.getElementById("alertaError");
+            if (alerta) {
+                alerta.style.transition = "opacity 0.5s ease";
+                alerta.style.opacity = "0";
+                setTimeout(function () {
+                    alerta.remove();
+                }, 500);
+            }
+        }, tiempoAlerta);
+    </script>
+}
+
+
+
 <style>
     body {
         background-color: #f4f6f9;
@@ -247,107 +277,7 @@
             </div>
         </div>
 
-
-
-
-
-
-        <!-- ================= CASA ================= -->
-      @*   <div class="card mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="m-0"><i class="bi bi-house-door-fill"></i> Selección de Casa</h5>
-                <span class="badge bg-white text-primary" id="badgeCasa">Pendiente</span>
-            </div>
-            <div class="card-body p-4">
-
-                <div class="row align-items">
-                    <div class="col-md-8">
-                        <label asp-for="InfoDetallada.CasaId" class="form-label fw-bold">
-                            Buscar Casa <span class="text-danger">*</span>
-                        </label>
-                        <select id="casaSelect" name="InfoDetallada.CasaId"
-                                class="form-select select2-casa" style="width: 100%;">
-                            <option value="">-- Escriba para buscar casa --</option>
-                            @if (Model.ListaCasas != null)
-                            {
-                                foreach (var item in Model.ListaCasas)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="InfoDetallada.CasaId" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <button type="button" id="btnVerCasa" class="btn btn-outline-primary w-100" disabled>
-                            <i class="bi bi-eye"></i> Ver detalle casa
-                        </button>
-
-                        <button type="button" id="btnResetCasa" class="btn btn-outline-primary w-100 mt-2" disabled>
-                            <i class="bi bi-x-circle-fill"></i> Reset detalle Casa
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Preview dinámico -->
-                <div id="previewCasa" class="mt-3 preview-card d-none">
-                    <div id="previewCasaContent">
-                        <!-- Se llena dinámicamente con JS -->
-                    </div>
-                </div>
-
-            </div>
-        </div> *@
-
-        <!-- ================= EDIFICIO ================= -->
-       @*  <div class="card mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="m-0"><i class="bi bi-building"></i> Selección de Edificio</h5>
-                <span class="badge bg-white text-primary" id="badgeEdificio">Pendiente</span>
-            </div>
-            <div class="card-body p-4">
-
-                <div class="row align-items">
-                    <div class="col-md-8">
-                        <label asp-for="InfoDetallada.IdEdificio" class="form-label fw-bold">
-                            Buscar Edificio <span class="text-danger">*</span>
-                        </label>
-                        <select id="edificioSelect" name="InfoDetallada.IdEdificio"
-                                class="form-select select2-edificio" style="width: 100%;">
-                            <option value="">-- Escriba para buscar edificio --</option>
-                            @if (Model.ListaEdificios != null)
-                            {
-                                foreach (var item in Model.ListaEdificios)
-                                {
-                                    <option value="@item.Value">@item.Text</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="InfoDetallada.IdEdificio" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-md-3">
-                        <button type="button" id="btnVerEdificio" class="btn btn-outline-primary w-100" disabled>
-                            <i class="bi bi-eye"></i> Ver detalle edificio
-                        </button>
-
-                        <button type="button" id="btnResetEdificio" class="btn btn-outline-primary w-100 mt-2" disabled>
-                            <i class="bi bi-x-circle-fill"></i> Reset detalle Edificio
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Preview dinámico -->
-                <div id="previewEdificio" class="mt-3 preview-card d-none">
-                    <div id="previewEdificioContent">
-                        <!-- Se llena dinámicamente con JS -->
-                    </div>
-                </div>
-
-            </div>
-        </div>
- *@
+               
 
         <!-- ================= VEHÍCULO ================= -->
         <div class="card mb-4">
@@ -462,10 +392,6 @@
                 <span asp-validation-for="ArchivoImagen" class="text-danger"></span>
             </div>
 
-
-
-
-
             <!-- Tomar foto -->
             <div id="divCamara" class="mb-3" style="display:none;">
                 <label>Tomar Foto</label>
@@ -498,15 +424,10 @@
 
 
 
-      @*   <div class="d-flex justify-content-end gap-3 mb-5">
-            <a asp-action="Index" class="btn btn-secondary btn-lg">Cancelar</a>
-
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-check-lg"></i> Guardar Información
-            </button>
-        </div> *@
+   
 
     </form>
+    
 </div>
 
 <!-- ================= MODAL PERSONA ================= -->
@@ -615,6 +536,12 @@
                             <div class="info-value" id="mcEtapa">-</div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Urbanizacion</div>
+                            <div class="info-value" id="Urbanizacion">-</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="loadingCasa" class="text-center py-5 d-none">
@@ -649,12 +576,7 @@
             <div class="modal-body p-4">
                 <div class="row g-3" id="datosEdificio">
                     <!-- Se llena dinámicamente -->
-                    <div class="col-md-6">
-                        <div class="info-box">
-                            <div class="info-label">Edificio</div>
-                            <div class="info-value text-success" id="mcNombreEdificio">-</div>
-                        </div>
-                    </div>
+                  
                     <div class="col-md-6">
                         <div class="info-box">
                             <div class="info-label">Familia</div>
@@ -677,6 +599,12 @@
                         <div class="info-box">
                             <div class="info-label">Etapa</div>
                             <div class="info-value" id="Etapa">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Urbanizacion</div>
+                            <div class="info-value" id="Urbanizacion">-</div>
                         </div>
                     </div>
                 </div>
@@ -733,6 +661,12 @@
                         <div class="info-box">
                             <div class="info-label">Color</div>
                             <div class="info-value" id="mvColor">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="info-label">Tipo de Vehiculo</div>
+                            <div class="info-value" id="mvTipo">-</div>
                         </div>
                     </div>
                 </div>

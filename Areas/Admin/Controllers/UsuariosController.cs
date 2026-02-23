@@ -29,18 +29,57 @@ namespace DLACCESS.Areas.Admin.Controllers
 
 
 
+        //[HttpGet]
+        //public IActionResult Bloquear(string id)
+        //{
+        //    if (id==null)
+        //    {
+        //        return NotFound();
+
+        //    }
+        //    _contenedorTrabajo.Usuario.BloquearUsuario(id);
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+
+        //[HttpGet]
+        //public IActionResult Desbloquear(string id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+
+        //    }
+
+
+        //    _contenedorTrabajo.Usuario.DesbloquearUsuario(id);
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+
+
         [HttpGet]
         public IActionResult Bloquear(string id)
         {
-            if (id==null)
+            if (id == null)
             {
                 return NotFound();
-
             }
+
+            // 1. Ejecutamos tu lógica de bloqueo de Identity (esto suele poner LockoutEnd en 100 años)
             _contenedorTrabajo.Usuario.BloquearUsuario(id);
+
+            // 2. Buscamos al usuario para forzar el campo Permiso en false
+            var usuario = _contenedorTrabajo.Usuario.ObtenerUsuario(id);
+            if (usuario != null)
+            {
+                usuario.Permiso = false; // <-- Aquí forzamos el permiso
+                                         // Si tu repositorio no tiene un método "Actualizar", asegúrate de que el Save guarde este cambio
+                _contenedorTrabajo.Save();
+            }
+
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpGet]
         public IActionResult Desbloquear(string id)
@@ -48,17 +87,21 @@ namespace DLACCESS.Areas.Admin.Controllers
             if (id == null)
             {
                 return NotFound();
-
             }
 
-
+            // 1. Quitamos el bloqueo de fecha
             _contenedorTrabajo.Usuario.DesbloquearUsuario(id);
+
+            // 2. Buscamos al usuario para forzar el campo Permiso en true
+            var usuario = _contenedorTrabajo.Usuario.ObtenerUsuario(id);
+            if (usuario != null)
+            {
+                usuario.Permiso = true; // <-- Devolvemos el permiso
+                _contenedorTrabajo.Save();
+            }
+
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
 
 
     }

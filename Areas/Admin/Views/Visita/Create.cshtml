@@ -1,0 +1,321 @@
+﻿@using DlaccessCore.Models.ViewModels
+@model VisitaVM
+
+@{
+    ViewData["Title"] = "Crear Visita";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Crear Visita</h4>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form id="formVisita" method="post" asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Visitante.IdPersona" id="hfPersona" />
+                <input type="hidden" asp-for="Visitante.CasaId" id="hfCasa" />
+                <input type="hidden" asp-for="Visitante.IdEdificio" id="hfEdificio" />
+                <input type="hidden" asp-for="FotoBase64" id="hfFotoBase64" />
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Visitante.Nombre" class="form-label fw-bold">Nombre</label>
+                        <input asp-for="Visitante.Nombre" class="form-control border-dark" placeholder="Nombre completo" />
+                        <span asp-validation-for="Visitante.Nombre" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Visitante.Cedula" class="form-label fw-bold">Cédula</label>
+                        <input asp-for="Visitante.Cedula" class="form-control border-dark" placeholder="Número de identificación" />
+                        <span asp-validation-for="Visitante.Cedula" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Visitante.Telefono" class="form-label fw-bold">Teléfono</label>
+                        <input asp-for="Visitante.Telefono" class="form-control border-dark" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Visitante.Email" class="form-label fw-bold">Email</label>
+                        <input asp-for="Visitante.Email" type="email" class="form-control border-dark" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Visitante.Placa" class="form-label fw-bold">Placa (Opcional)</label>
+                        <input asp-for="Visitante.Placa" class="form-control border-dark text-uppercase" />
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="bg-light p-3 rounded mb-4 border">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-camera"></i> Registro de Imagen</h5>
+
+                    <div class="d-flex gap-4 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionArchivo" value="archivo" checked onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionArchivo">Subir Archivo</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="opcionImagen" id="opcionCamara" value="camara" onchange="toggleImagen()">
+                            <label class="form-check-label" for="opcionCamara">Tomar Foto</label>
+                        </div>
+                    </div>
+
+                    <div id="divArchivo">
+                        <input asp-for="ArchivoImagen" type="file" class="form-control border-dark" accept="image/*" onchange="previewArchivo(this)" />
+                    </div>
+
+                    <div id="divCamara" style="display:none;">
+                        <div class="d-flex flex-column align-items-center">
+                            <video id="video" width="320" height="240" autoplay class="border rounded bg-black mb-2" style="display:none;"></video>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-dark" onclick="iniciarCamara()">Abrir Cámara</button>
+                                <button type="button" class="btn btn-dark" onclick="tomarFoto()">Capturar</button>
+                            </div>
+                            <canvas id="canvas" style="display:none;"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <img id="previewImagen" src="" class="img-thumbnail shadow-sm" style="display:none; max-height:200px;" />
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Destino de la Visita</label>
+                        <select id="modoBusqueda" class="form-select border-dark shadow-sm">
+                            <option value="">-- Seleccione Tipo de Destino --</option>
+                            <option value="persona">Persona Específica</option>
+                            <option value="casa">Casa / Villa</option>
+                            <option value="edificio">Edificio / Torre</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="busquedaPersona" class="mb-3" style="display:none;">
+                    <select id="selectPersona" class="selectpicker form-control border-dark" data-live-search="true">
+                        <option value="">Buscar Persona...</option>
+                        @foreach (var p in Model.ListaPersonas)
+                        {
+                            <option value="@p.Value" data-nombre="@p.Text">@p.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div id="busquedaCasa" class="mb-3" style="display:none;">
+                    <select id="selectCasa" class="selectpicker form-control border-dark" data-live-search="true">
+                        <option value="">Buscar Casa...</option>
+                        @foreach (var c in Model.ListaCasas)
+                        {
+                            <option value="@c.Value" data-nombre="@c.Text">@c.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div id="busquedaEdificio" class="mb-3" style="display:none;">
+                    <select id="selectEdificio" class="selectpicker form-control border-dark" data-live-search="true">
+                        <option value="">Buscar Edificio...</option>
+                        @foreach (var e in Model.ListaEdificios)
+                        {
+                            <option value="@e.Value" data-nombre="@e.Text">@e.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div id="resumenSeleccion" class="alert alert-secondary border-dark" style="display:none;">
+                    <strong>Destino seleccionado:</strong> <span id="resumenContenido"></span>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Fecha Inicio</label>
+                        <input asp-for="Visitante.InicioFechaVisita" type="date" class="form-control border-dark" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Fecha Fin</label>
+                        <input asp-for="Visitante.FinFechaVisita" type="date" class="form-control border-dark" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 text-end">
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">Cancelar</a>
+                    <button type="button" class="btn btn-dark px-4" onclick="abrirModalConfirmacion()">
+                        <i class="bi bi-check-circle"></i> Registrar Visita
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Confirmar Datos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalContenido">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Editar</button>
+                <button type="button" class="btn btn-success px-4" onclick="submitForm()">Confirmar y Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let streamActivo = null;
+
+        $(document).ready(function () {
+            $('.selectpicker').selectpicker();
+
+            // Lógica de cambio de modo de búsqueda
+            $('#modoBusqueda').change(function () {
+                const modo = $(this).val();
+                $('#busquedaPersona, #busquedaCasa, #busquedaEdificio, #resumenSeleccion').hide();
+                $('#hfPersona, #hfCasa, #hfEdificio').val('');
+                $('.selectpicker').selectpicker('val', '');
+
+                if (modo === 'persona') $('#busquedaPersona').show();
+                else if (modo === 'casa') $('#busquedaCasa').show();
+                else if (modo === 'edificio') $('#busquedaEdificio').show();
+            });
+
+            // Asignar IDs a los hiddens
+            $('#selectPersona, #selectCasa, #selectEdificio').change(function () {
+                const id = $(this).val();
+                const nombre = $(this).find(':selected').data('nombre');
+                const modo = $('#modoBusqueda').val();
+
+                if (modo === 'persona') $('#hfPersona').val(id);
+                if (modo === 'casa') $('#hfCasa').val(id);
+                if (modo === 'edificio') $('#hfEdificio').val(id);
+
+                if (id) {
+                    $('#resumenSeleccion').show();
+                    $('#resumenContenido').text(nombre);
+                } else {
+                    $('#resumenSeleccion').hide();
+                }
+            });
+        });
+
+        // --- FUNCIONES DE IMAGEN ---
+
+        function toggleImagen() {
+            const opcion = document.querySelector('input[name="opcionImagen"]:checked').value;
+            // Limpiar todo
+            $('#hfFotoBase64').val('');
+            $('input[type="file"]').val('');
+            $('#previewImagen').hide().attr('src', '');
+            detenerCamara();
+
+            if (opcion === 'archivo') {
+                $('#divArchivo').show();
+                $('#divCamara').hide();
+            } else {
+                $('#divArchivo').hide();
+                $('#divCamara').show();
+            }
+        }
+
+        function iniciarCamara() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    streamActivo = stream;
+                    const video = document.getElementById('video');
+                    video.srcObject = stream;
+                    video.style.display = "block";
+                })
+                .catch(err => alert("Error cámara: " + err));
+        }
+
+        function tomarFoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            if (!streamActivo) return alert("Inicie la cámara primero.");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            $('#hfFotoBase64').val(dataUrl);
+            $('#previewImagen').attr('src', dataUrl).show();
+            detenerCamara();
+        }
+
+        function previewArchivo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#previewImagen').attr('src', e.target.result).show();
+                    $('#hfFotoBase64').val(''); // Aseguramos que el Base64 esté vacío
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function detenerCamara() {
+            if (streamActivo) {
+                streamActivo.getTracks().forEach(t => t.stop());
+                streamActivo = null;
+            }
+            $('#video').hide()[0].srcObject = null;
+        }
+
+        // --- CONFIRMACIÓN Y ENVÍO ---
+
+        function abrirModalConfirmacion() {
+            const nombre = $('input[name="Visitante.Nombre"]').val();
+            const cedula = $('input[name="Visitante.Cedula"]').val();
+            const destino = $('#resumenContenido').text() || "No seleccionado";
+            const imgPreview = $('#previewImagen').attr('src');
+
+            if (!nombre || !cedula) {
+                alert("Por favor complete el nombre y la cédula.");
+                return;
+            }
+
+            let html = `
+                <div class="row">
+                    <div class="col-md-6 border-end">
+                        <p class="mb-1 text-muted small">VISITANTE</p>
+                        <h5 class="fw-bold">${nombre}</h5>
+                        <p class="mb-3">ID: ${cedula}</p>
+                        <p class="mb-1 text-muted small">DESTINO</p>
+                        <p class="fw-bold text-success">${destino}</p>
+                        <p class="mb-1 text-muted small">PLACA VEHÍCULO</p>
+                        <p class="fw-bold">${$('input[name="Visitante.Placa"]').val() || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <p class="mb-2 text-muted small">VISTA PREVIA IMAGEN</p>
+                        ${imgPreview ? `<img src="${imgPreview}" class="img-fluid rounded border shadow-sm" style="max-height: 200px;"/>` : `<div class="alert alert-warning py-4">Sin Imagen</div>`}
+                    </div>
+                </div>`;
+
+            $('#modalContenido').html(html);
+            new bootstrap.Modal(document.getElementById('modalConfirmacion')).show();
+        }
+
+        function submitForm() {
+            // Deshabilitar botón para evitar doble envío
+            $('#modalConfirmacion button.btn-success').prop('disabled', true).text('Guardando...');
+            $('#formVisita').submit();
+        }
+    </script>
+}

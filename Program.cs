@@ -2,6 +2,7 @@ using DlaccessCore.AccesoDatos.Data;
 using DlaccessCore.AccesoDatos.Data.IRepository;
 using DlaccessCore.AccesoDatos.Data.Repository;
 using DlaccessCore.Models.Models.IdentidadDeUsuario;
+using DlaccessCore.Utilidades.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,8 @@ options.SignIn.RequireConfirmedAccount = false)
     .AddDefaultUI();
 builder.Services.AddControllersWithViews();
 
+
+builder.Services.AddScoped<ValidadorInfoDetallada>();
 
 //Agregar contenedor de trabajo al contenedor Ioc de inyecci�n de dependencias
 builder.Services.AddScoped<IContenedorTrabajo, ContenedorTrabajo>();
